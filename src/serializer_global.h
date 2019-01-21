@@ -1,0 +1,12 @@
+#ifndef SERIALIZER_GLOBAL_H
+#define SERIALIZER_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(SERIALIZER_LIBRARY)
+#  define SERIALIZERSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define SERIALIZERSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // SERIALIZER_GLOBAL_H
