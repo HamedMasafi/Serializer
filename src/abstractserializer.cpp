@@ -4,3 +4,8 @@
 AbstractSerializer::AbstractSerializer()
 {
 }
+
+AbstractSerializer::~AbstractSerializer()
+{
+
+}

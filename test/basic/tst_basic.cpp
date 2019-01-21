@@ -1,6 +1,14 @@
 #include <QtTest>
 
+#include <QPoint>
 #include <QDebug>
+#include <QVector>
+#include <QPolygon>
+
+#ifdef QT_GUI_LIB
+#include <QtGui/QFont>
+#endif
+
 #include <stringserializer.h>
 
 class basic : public QObject
@@ -55,12 +63,20 @@ void basic::test_case1()
     QVariant deserialized;
 
     TEST(QMetaType::Int, 5);
+    TEST(QMetaType::UInt, 5);
     TEST(QMetaType::Short, 6);
+    TEST(QMetaType::UShort, 6);
     TEST(QMetaType::Long, 6);
-    TEST(QMetaType::LongLong, 6);
+    TEST(QMetaType::ULong, 5u);
+    TEST(QMetaType::LongLong, 6LL);
+    TEST(QMetaType::ULongLong, 5ULL);
     TEST(QMetaType::Float, 3.14f);
     TEST(QMetaType::Double, 1024.2048);
     TEST(QMetaType::QString, "test");
+    TEST(QMetaType::QChar, QChar('z'));
+    TEST(QMetaType::Char, 'c');
+    TEST(QMetaType::Char, 'ز');
+    TEST(QMetaType::SChar, 255);
     TEST(QMetaType::QDate, QDate::currentDate());
     TEST(QMetaType::QTime, QTime::currentTime());
     TEST(QMetaType::QDateTime, QDateTime::currentDateTime());
@@ -71,6 +87,15 @@ void basic::test_case1()
     TEST(QMetaType::QSizeF, QSizeF(12.98, 34.87));
     TEST(QMetaType::QRectF, QRectF(3.4, 4.5, 6.001, 7.54));
     TEST(QMetaType::QUuid, QUuid::createUuid());
+    TEST(QMetaType::QByteArray, QByteArray("sample byte array"));
+    TEST(QMetaType::QByteArray, QByteArray("رشته یونیکد"));
+    TEST(QMetaType::QStringList, QStringList() << "one" << "two" << "three");
+    TEST(QMetaType::QUrl, QUrl("http://google.com"));
+    TEST(QMetaType::QLine, QLine(1, 2, 3, 4));
+    TEST(QMetaType::QLineF, QLineF(1.2, 2.3, 3.4, 4.5));
+    TEST(QMetaType::QJsonDocument, QJsonDocument::fromJson("{x: 1, y: 2}"));
+    TEST(QMetaType::QFont, QFont("Tahoma", 15, 5, true));
+    TEST(QMetaType::QPolygon, QPolygon(QVector<QPoint>() << QPoint(1, 2) << QPoint(3, 4)));
 }
 
 QTEST_APPLESS_MAIN(basic)

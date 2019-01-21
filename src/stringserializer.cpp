@@ -11,6 +11,16 @@
 #include <QTime>
 #include <QDateTime>
 #include <QDebug>
+#include <QUrl>
+#include <QLineF>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
+
+#ifdef QT_GUI_LIB
+#include <QtGui/QFont>
+#include <QtGui/QPolygon>
+#endif
 
 #define DATE_FORMAT "yyyy-MM-dd"
 #define TIME_FORMAT "HH-mm-ss.zzz"
@@ -19,26 +29,38 @@ StringSerializer::StringSerializer()
 
 }
 
-QVariant StringSerializer::fromString(const QString &value, const QMetaType::Type &type)
+QVariant StringSerializer::fromString(const QString &value, const QMetaType::Type &type) const
 {
     switch (type) {
+    case QMetaType::Char:
     case QMetaType::Int:        return value.toInt();
+    case QMetaType::SChar:
+    case QMetaType::UInt:       return value.toUInt();
     case QMetaType::Short:      return value.toShort();
+    case QMetaType::UShort:     return value.toUShort();
     case QMetaType::Long:       return qVariantFromValue(value.toLong());
+    case QMetaType::ULong:      return qVariantFromValue(value.toULong());
     case QMetaType::LongLong:   return value.toLongLong();
+    case QMetaType::ULongLong:  return qVariantFromValue(value.toULongLong());
     case QMetaType::Float:      return value.toFloat();
     case QMetaType::Double:     return value.toDouble();
-    case QMetaType::QString:
-        return value;
-
-    case QMetaType::QDate:
-        return QDate::fromString(value, DATE_FORMAT);
-
-    case QMetaType::QTime:
-        return QTime::fromString(value, TIME_FORMAT);
-
-    case QMetaType::QDateTime:
-        return QDateTime::fromString(value, DATE_FORMAT " " TIME_FORMAT);
+    case QMetaType::QString:    return value;
+    case QMetaType::QDate:      return QDate::fromString(value, DATE_FORMAT);
+    case QMetaType::QTime:      return QTime::fromString(value, TIME_FORMAT);
+    case QMetaType::QDateTime:  return QDateTime::fromString(value, DATE_FORMAT " " TIME_FORMAT);
+    case QMetaType::QUrl:       return QUrl(value);
+    case QMetaType::QChar:      return value.at(0);
+    case QMetaType::QStringList: {
+        int pos = value.indexOf(" ");
+        QList<int> lens = toListInt(value.left(pos));
+        QStringList ret;
+        pos++;
+        foreach (int n, lens) {
+            ret.append(value.mid(pos, n));
+            pos += n;
+        }
+        return ret;
+    }
 
     case QMetaType::QPoint: {
         QList<int> parts = toListInt(value);
@@ -61,6 +83,13 @@ QVariant StringSerializer::fromString(const QString &value, const QMetaType::Typ
 
         return QRect(parts.at(0), parts.at(1), parts.at(2), parts.at(3));
     }
+    case QMetaType::QLine: {
+        QList<int> parts = toListInt(value);
+        if (parts.size() != 4)
+            return QLine();
+
+        return QLine(parts.at(0), parts.at(1), parts.at(2), parts.at(3));
+    }
     case QMetaType::QPointF: {
         QList<qreal> parts = toListReal(value);
         if (parts.size() != 2)
@@ -82,10 +111,36 @@ QVariant StringSerializer::fromString(const QString &value, const QMetaType::Typ
 
         return QRectF(parts.at(0), parts.at(1), parts.at(2), parts.at(3));
     }
+    case QMetaType::QLineF: {
+        QList<qreal> parts = toListReal(value);
+        if (parts.size() != 4)
+            return QLineF();
+
+        return QLineF(parts.at(0), parts.at(1), parts.at(2), parts.at(3));
+    }
+    case QMetaType::QPolygon:
+        value
+    case QMetaType::QUuid:
+        return QUuid::fromString(value);
+    case QMetaType::QByteArray:
+        return value.toUtf8();
+
+    case QMetaType::QJsonDocument:
+        return QJsonDocument::fromJson(value.toUtf8());
+
+#ifdef QT_GUI_LIB
+    case QMetaType::QFont: {
+        QFont f;
+        f.fromString(value);
+        return f;
+    }
+#endif
+    default:
+        return QVariant();
     }
 }
 
-QString StringSerializer::toString(const QVariant &value)
+QString StringSerializer::toString(const QVariant &value) const
 {
     QMetaType::Type type = static_cast<QMetaType::Type>(value.type());
     switch (type) {
@@ -107,6 +162,17 @@ QString StringSerializer::toString(const QVariant &value)
     case QMetaType::QUrl:
     case QMetaType::QString:
         return value.toString();
+//    case QMetaType::QChar:
+//        return value.toChar().digitValue();
+
+    case QMetaType::QStringList: {
+        QList<int> lens;
+        QStringList sl = value.toStringList();
+        foreach (QString s, sl)
+            lens.append(s.length());
+
+        return fromList(lens) + " " + sl.join("");
+    }
 
     case QMetaType::QUuid:
         return value.toUuid().toString();
@@ -130,6 +196,10 @@ QString StringSerializer::toString(const QVariant &value)
         QRect rc = value.toRect();
         return fromList(QList<int>() << rc.x() << rc.y() << rc.width() << rc.height());
     }
+    case QMetaType::QLine: {
+        QLine rc = value.toLine();
+        return fromList(QList<int>() << rc.x1() << rc.y1() << rc.x2() << rc.y2());
+    }
     case QMetaType::QPointF: {
         QPointF pt = value.toPointF();
         return fromList(QList<qreal>() << pt.x() << pt.y());
@@ -142,11 +212,23 @@ QString StringSerializer::toString(const QVariant &value)
         QRectF rc = value.toRectF();
         return fromList(QList<qreal>() << rc.x() << rc.y() << rc.width() << rc.height());
     }
+    case QMetaType::QLineF: {
+        QLineF rc = value.toLineF();
+        return fromList(QList<qreal>() << rc.x1() << rc.y1() << rc.x2() << rc.y2());
+    }
+    case QMetaType::QJsonDocument:
+        return QString(value.toJsonDocument().toJson());
+
+    case QMetaType::QPolygon:
+//        return value.value<QPolygon>().capacity()
+#ifdef QT_GUI_LIB
+    case QMetaType::QFont:
+        return value.value<QFont>().toString();
+#endif
 
     case QMetaType::QJsonArray:
     case QMetaType::QJsonValue:
     case QMetaType::QJsonObject:
-    case QMetaType::QJsonDocument:
     default:
         qWarning("The type (%s) does not supported",
                  QMetaType::typeName(type));
@@ -154,7 +236,8 @@ QString StringSerializer::toString(const QVariant &value)
     }
 }
 
-QList<int> StringSerializer::toListInt(const QString &s){
+QList<int> StringSerializer::toListInt(const QString &s) const
+{
     auto parts = s.split(",");
     QList<int> ret;
     foreach (QString p, parts) {
@@ -167,7 +250,7 @@ QList<int> StringSerializer::toListInt(const QString &s){
     return ret;
 }
 
-QString StringSerializer::fromList(const QList<int> &list)
+QString StringSerializer::fromList(const QList<int> &list) const
 {
     QString ret;
     foreach (int n, list) {
@@ -178,7 +261,7 @@ QString StringSerializer::fromList(const QList<int> &list)
     return ret;
 }
 
-QList<qreal> StringSerializer::toListReal(const QString &s)
+QList<qreal> StringSerializer::toListReal(const QString &s) const
 {
     auto parts = s.split(",");
     QList<qreal> ret;
@@ -192,7 +275,7 @@ QList<qreal> StringSerializer::toListReal(const QString &s)
     return ret;
 }
 
-QString StringSerializer::fromList(const QList<qreal> &list)
+QString StringSerializer::fromList(const QList<qreal> &list) const
 {
     QString ret;
     foreach (qreal n, list) {

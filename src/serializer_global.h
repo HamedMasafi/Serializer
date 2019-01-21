@@ -4,7 +4,8 @@
 #include <QtCore/qglobal.h>
 
 #if defined(SERIALIZER_LIBRARY)
-#  define SERIALIZERSHARED_EXPORT Q_DECL_EXPORT
+#  define SERIALIZERSHARED_EXPORT
+//Q_DECL_EXPORT
 #else
 #  define SERIALIZERSHARED_EXPORT Q_DECL_IMPORT
 #endif
