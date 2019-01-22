@@ -1,0 +1,21 @@
+#ifndef BINARYSERIALIZER_H
+#define BINARYSERIALIZER_H
+
+#include "abstractserializer.h"
+#include <QJsonDocument>
+#include <QDebug>
+
+class BinarySerializer : public AbstractSerializer
+{
+public:
+    BinarySerializer();
+
+    QVariant fromString(const QString &value, const QMetaType::Type &type) const;
+    QString toString(const QVariant &value) const;
+};
+
+
+QDataStream &operator<<(QDataStream &stream, const QJsonDocument &doc);
+QDataStream &operator>>(QDataStream &stream, QJsonDocument &doc);
+
+#endif // BINARYSERIALIZER_H

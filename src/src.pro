@@ -24,12 +24,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     abstractserializer.cpp \
-    stringserializer.cpp
+    stringserializer.cpp \
+    binaryserializer.cpp
 
 HEADERS += \
         serializer_global.h \ 
     abstractserializer.h \
-    stringserializer.h
+    stringserializer.h \
+    binaryserializer.h
 
 unix {
     target.path = /usr/lib
