@@ -50,8 +50,10 @@ void basic::cleanupTestCase()
     do{ \
     v = QVariant(value); \
     tmp = ser.toString(v); \
+    qDebug() << #type " serialized as" << tmp; \
     deserialized = ser.fromString(tmp, type); \
-    qDebug() << v << deserialized; \
+    if (deserialized != v) \
+        qDebug() << v << deserialized; \
     QVERIFY2(deserialized == v, "verfy faild for" #type); \
     } while (false)
 
@@ -89,13 +91,17 @@ void basic::test_case1()
     TEST(QMetaType::QUuid, QUuid::createUuid());
     TEST(QMetaType::QByteArray, QByteArray("sample byte array"));
     TEST(QMetaType::QByteArray, QByteArray("رشته یونیکد"));
+    TEST(QMetaType::QBitArray, QBitArray::fromBits("abc", 3 * 8));
     TEST(QMetaType::QStringList, QStringList() << "one" << "two" << "three");
     TEST(QMetaType::QUrl, QUrl("http://google.com"));
     TEST(QMetaType::QLine, QLine(1, 2, 3, 4));
     TEST(QMetaType::QLineF, QLineF(1.2, 2.3, 3.4, 4.5));
-    TEST(QMetaType::QJsonDocument, QJsonDocument::fromJson("{x: 1, y: 2}"));
+    TEST(QMetaType::QJsonDocument, QJsonDocument::fromJson("{\"x\": 1, \"y\": 2}"));
     TEST(QMetaType::QFont, QFont("Tahoma", 15, 5, true));
     TEST(QMetaType::QPolygon, QPolygon(QVector<QPoint>() << QPoint(1, 2) << QPoint(3, 4)));
+    TEST(QMetaType::QPolygonF, QPolygonF(QVector<QPointF>() << QPointF(1.2, 2.5) << QPointF(3.4, 4.5)));
+    TEST(QMetaType::QColor, QColor(Qt::blue));
+    TEST(QMetaType::QImage, QImage(":/icon.png"));
 }
 
 QTEST_APPLESS_MAIN(basic)

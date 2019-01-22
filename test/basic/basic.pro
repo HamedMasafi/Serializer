@@ -14,3 +14,6 @@ HEADERS += \
     ../../src/abstractserializer.h \
     ../../src/serializer_global.h \
     ../../src/stringserializer.h
+
+RESOURCES += \
+    res.qrc

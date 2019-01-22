@@ -16,10 +16,15 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QBitArray>
+#include <QBuffer>
 
 #ifdef QT_GUI_LIB
 #include <QtGui/QFont>
 #include <QtGui/QPolygon>
+#include <QtGui/QPolygonF>
+#include <QtGui/QColor>
+#include <QtGui/QImage>
 #endif
 
 #define DATE_FORMAT "yyyy-MM-dd"
@@ -118,8 +123,7 @@ QVariant StringSerializer::fromString(const QString &value, const QMetaType::Typ
 
         return QLineF(parts.at(0), parts.at(1), parts.at(2), parts.at(3));
     }
-    case QMetaType::QPolygon:
-        value
+
     case QMetaType::QUuid:
         return QUuid::fromString(value);
     case QMetaType::QByteArray:
@@ -128,7 +132,41 @@ QVariant StringSerializer::fromString(const QString &value, const QMetaType::Typ
     case QMetaType::QJsonDocument:
         return QJsonDocument::fromJson(value.toUtf8());
 
+    case QMetaType::QBitArray: {
+        QBitArray bita(value.size());
+        for (int i = 0; i < value.size(); ++i) {
+            if (value.at(i) == "0")
+                bita.setBit(i, false);
+            else
+                bita.setBit(i, true);
+        }
+        return bita;
+    }
+
 #ifdef QT_GUI_LIB
+    case QMetaType::QImage: {
+        QImage image;
+        image.loadFromData(QByteArray::fromBase64(value.toLocal8Bit()));
+        return image;
+    }
+
+    case QMetaType::QColor:
+        return QColor(value);
+
+    case QMetaType::QPolygon: {
+        QStringList parts = value.split(" ");
+        QPolygon pol;
+        for (int i = 0; i < parts.count(); i++)
+            pol.append(fromString(parts.at(i), QMetaType::QPoint).toPoint());
+        return pol;
+    }
+    case QMetaType::QPolygonF: {
+        QStringList parts = value.split(" ");
+        QPolygonF pol;
+        for (int i = 0; i < parts.count(); i++)
+            pol.append(fromString(parts.at(i), QMetaType::QPointF).toPointF());
+        return pol;
+    }
     case QMetaType::QFont: {
         QFont f;
         f.fromString(value);
@@ -217,11 +255,51 @@ QString StringSerializer::toString(const QVariant &value) const
         return fromList(QList<qreal>() << rc.x1() << rc.y1() << rc.x2() << rc.y2());
     }
     case QMetaType::QJsonDocument:
-        return QString(value.toJsonDocument().toJson());
+        return QString(value.toJsonDocument().toJson(QJsonDocument::Compact));
 
-    case QMetaType::QPolygon:
-//        return value.value<QPolygon>().capacity()
+    case QMetaType::QBitArray: {
+        QString ret;
+        QBitArray bita = value.toBitArray();
+        for (int i = 0; i < bita.size(); ++i)
+            ret.append(bita.at(i) ? "1" : "0");
+        return ret;
+    }
+
 #ifdef QT_GUI_LIB
+    case QMetaType::QImage: {
+        QImage image = value.value<QImage>();
+        QByteArray byteArray;
+        QBuffer buffer(&byteArray);
+        image.save(&buffer, "PNG");
+        QString base64 = QString::fromLatin1(byteArray.toBase64().data());
+        return base64;
+    }
+
+    case QMetaType::QColor:
+        return value.value<QColor>().name();
+
+    case QMetaType::QPolygon: {
+        QStringList list;
+        QPolygon pol = value.value<QPolygon>();
+        QPoint pt;
+        for (int i = 0; i < pol.size(); ++i) {
+            pt = pol.at(i);
+            list.append(toString(pt));
+        }
+
+        return list.join(" ");
+    }
+    case QMetaType::QPolygonF: {
+        QStringList list;
+        QPolygonF pol = value.value<QPolygonF>();
+        QPointF pt;
+        for (int i = 0; i < pol.size(); ++i) {
+            pt = pol.at(i);
+            list.append(toString(pt));
+        }
+
+        return list.join(" ");
+    }
     case QMetaType::QFont:
         return value.value<QFont>().toString();
 #endif
