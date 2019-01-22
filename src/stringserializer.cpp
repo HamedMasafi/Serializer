@@ -401,3 +401,31 @@ QString StringSerializer::fromList(const QList<qreal> &list) const
     }
     return ret;
 }
+
+QString StringSerializer::escapeString(QString &str)
+{
+    return str
+            .replace("\"", "\\\"")
+            .replace("\r", "\\r")
+            .replace("\n", "\\n")
+            .replace("\a", "\\a")
+            .replace("\b", "\\b")
+            .replace("\f", "\\f")
+            .replace("\'", "\\'")
+            .replace("\t", "\\t")
+            .replace("\v", "\\v");
+}
+
+QString StringSerializer::unescapeString(QString &str)
+{
+    return str
+            .replace("\\\"", "\"")
+            .replace("\\r", "\r")
+            .replace("\\n", "\n")
+            .replace("\\a", "\a")
+            .replace("\\b", "\b")
+            .replace("\\f", "\f")
+            .replace("\\'", "\'")
+            .replace("\\t", "\t")
+            .replace("\\v", "\v");
+}

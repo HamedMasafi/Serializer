@@ -17,6 +17,9 @@ private:
 
     QList<qreal> toListReal(const QString &s) const;
     QString fromList(const QList<qreal> &list) const;
+
+    QString escapeString(QString &str);
+    QString unescapeString(QString &str);
 };
 
 #endif // STRINGSERIALIZER_H
