@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QVector>
 #include <QPolygon>
+#include <binaryserializer.h>
 
 #ifdef QT_GUI_LIB
 #include <QtGui/QFont>
@@ -101,7 +102,10 @@ void basic::test_case1()
     TEST(QMetaType::QPolygon, QPolygon(QVector<QPoint>() << QPoint(1, 2) << QPoint(3, 4)));
     TEST(QMetaType::QPolygonF, QPolygonF(QVector<QPointF>() << QPointF(1.2, 2.5) << QPointF(3.4, 4.5)));
     TEST(QMetaType::QColor, QColor(Qt::blue));
-    TEST(QMetaType::QImage, QImage(":/icon.png"));
+    TEST(QMetaType::QVector2D, QVector2D(1.2f, 3.4f));
+    TEST(QMetaType::QVector3D, QVector3D(1.2f, 3.4f, 5.6f));
+    TEST(QMetaType::QVector4D, QVector4D(1.2f, 3.4f, 5.6f, 7.8f));
+//    TEST(QMetaType::QImage, QImage(":/icon.png"));
 }
 
 QTEST_APPLESS_MAIN(basic)

@@ -25,6 +25,9 @@
 #include <QtGui/QPolygonF>
 #include <QtGui/QColor>
 #include <QtGui/QImage>
+#include <QtGui/QVector2D>
+#include <QtGui/QVector3D>
+#include <QtGui/QVector4D>
 #endif
 
 #define DATE_FORMAT "yyyy-MM-dd"
@@ -144,6 +147,28 @@ QVariant StringSerializer::fromString(const QString &value, const QMetaType::Typ
     }
 
 #ifdef QT_GUI_LIB
+    case QMetaType::QVector2D: {
+        QList<qreal> parts = toListReal(value);
+        if (parts.size() != 2)
+            return QVector2D();
+
+        return QVector2D(parts.at(0), parts.at(1));
+    }
+    case QMetaType::QVector3D: {
+        QList<qreal> parts = toListReal(value);
+        if (parts.size() != 3)
+            return QVector3D();
+
+        return QVector3D(parts.at(0), parts.at(1), parts.at(2));
+    }
+    case QMetaType::QVector4D: {
+        QList<qreal> parts = toListReal(value);
+        if (parts.size() != 4)
+            return QVector4D();
+
+        return QVector4D(parts.at(0), parts.at(1), parts.at(3), parts.at(4));
+    }
+
     case QMetaType::QImage: {
         QImage image;
         image.loadFromData(QByteArray::fromBase64(value.toLocal8Bit()));
@@ -266,6 +291,19 @@ QString StringSerializer::toString(const QVariant &value) const
     }
 
 #ifdef QT_GUI_LIB
+    case QMetaType::QVector2D: {
+        QVector2D vec = value.value<QVector2D>();
+        return fromList(QList<qreal>() << vec.x() << vec.y());
+    }
+    case QMetaType::QVector3D: {
+        QVector3D vec = value.value<QVector3D>();
+        return fromList(QList<qreal>() << vec.x() << vec.y() << vec.z());
+    }
+    case QMetaType::QVector4D: {
+        QVector4D vec = value.value<QVector4D>();
+        return fromList(QList<qreal>() << vec.x() << vec.y() << vec.z() << vec.w());
+    }
+
     case QMetaType::QImage: {
         QImage image = value.value<QImage>();
         QByteArray byteArray;
