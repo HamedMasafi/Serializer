@@ -405,6 +405,7 @@ QString StringSerializer::fromList(const QList<qreal> &list) const
 QString StringSerializer::escapeString(QString &str)
 {
     return str
+            .replace("\\", "\\\\")
             .replace("\"", "\\\"")
             .replace("\r", "\\r")
             .replace("\n", "\\n")
@@ -427,5 +428,6 @@ QString StringSerializer::unescapeString(QString &str)
             .replace("\\f", "\f")
             .replace("\\'", "\'")
             .replace("\\t", "\t")
-            .replace("\\v", "\v");
+            .replace("\\v", "\v")
+            .replace("\\\\", "\\"");
 }
