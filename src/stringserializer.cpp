@@ -166,7 +166,7 @@ QVariant StringSerializer::fromString(const QString &value, const QMetaType::Typ
         if (parts.size() != 4)
             return QVector4D();
 
-        return QVector4D(parts.at(0), parts.at(1), parts.at(3), parts.at(4));
+        return QVector4D(parts.at(0), parts.at(1), parts.at(2), parts.at(3));
     }
 
     case QMetaType::QImage: {
