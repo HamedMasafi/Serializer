@@ -429,5 +429,5 @@ QString StringSerializer::unescapeString(QString &str)
             .replace("\\'", "\'")
             .replace("\\t", "\t")
             .replace("\\v", "\v")
-            .replace("\\\\", "\\"");
+            .replace("\\\\", "\\");
 }
