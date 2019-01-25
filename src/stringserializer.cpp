@@ -490,11 +490,16 @@ void StringSerializer::readString(QString &text, QString &out)
     int start = -1;
     int end = -1;
 
-    int quotecount = 0;
-    bool found = false;
     for (int i = 0; i < text.length(); ++i) {
-        if (text.at(i) == '"')
-            quotecount++;
-
+        if (text.at(i) == '"' && (i == 0 || text.at(i - 1) != "\\")) {
+            if (start == -1)
+                start = i;
+            else
+                end = i;
+        }
+        if (end != -1){
+            out = text.mid(start + 1, end - start - 1);
+            text = text.mid(end + 1);
+        }
     }
 }

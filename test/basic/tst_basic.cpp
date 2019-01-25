@@ -23,8 +23,8 @@ public:
 private slots:
     void initTestCase();
     void cleanupTestCase();
-    void test_case1();
-
+    void types();
+    void getString();
 };
 
 basic::basic()
@@ -68,7 +68,7 @@ void basic::cleanupTestCase()
     QVERIFY2(deserialized == v, "verfy faild for" #type); \
     } while (false)
 
-void basic::test_case1()
+void basic::types()
 {
     StringSerializer ser;
     QVariant v;
@@ -123,8 +123,19 @@ void basic::test_case1()
     TEST(QMetaType::QVector2D, QVector2D(1.2f, 3.4f));
     TEST(QMetaType::QVector3D, QVector3D(1.2f, 3.4f, 5.6f));
     TEST(QMetaType::QVector4D, QVector4D(1.2f, 3.4f, 5.6f, 7.8f));
-    TEST(QMetaType::QVariantMap, map);
+//    TEST(QMetaType::QVariantMap, map);
     TEST_NO_MSG(QMetaType::QImage, QImage(":/icon.png"));
+}
+
+void basic::getString()
+{
+    StringSerializer s;
+    QString text = "\"Hi this is \\\" sample\" text";
+    QString out;
+    s.readString(text, out);
+    qDebug() << out;
+    qDebug() << text;
+    QVERIFY(out == "Hi this is \\\" sample");
 }
 
 QTEST_APPLESS_MAIN(basic)
