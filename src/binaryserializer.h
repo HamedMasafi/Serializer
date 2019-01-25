@@ -18,4 +18,6 @@ public:
 QDataStream &operator<<(QDataStream &stream, const QJsonDocument &doc);
 QDataStream &operator>>(QDataStream &stream, QJsonDocument &doc);
 
+Q_DECLARE_METATYPE(QJsonDocument)
+
 #endif // BINARYSERIALIZER_H

@@ -58,12 +58,27 @@ void basic::cleanupTestCase()
     QVERIFY2(deserialized == v, "verfy faild for" #type); \
     } while (false)
 
+#define TEST_NO_MSG(type, value) \
+    do{ \
+    v = QVariant(value); \
+    tmp = ser.toString(v); \
+    deserialized = ser.fromString(tmp, type); \
+    if (deserialized != v) \
+        qDebug() << v << deserialized; \
+    QVERIFY2(deserialized == v, "verfy faild for" #type); \
+    } while (false)
+
 void basic::test_case1()
 {
     StringSerializer ser;
     QVariant v;
     QString tmp;
     QVariant deserialized;
+
+    QVariantMap map;
+    map.insert("a", 1);
+    map.insert("b", "aa\naa");
+    map.insert("c", "Hi\"there");
 
     TEST(QMetaType::Int, 5);
     TEST(QMetaType::UInt, 5);
@@ -97,6 +112,9 @@ void basic::test_case1()
     TEST(QMetaType::QUrl, QUrl("http://google.com"));
     TEST(QMetaType::QLine, QLine(1, 2, 3, 4));
     TEST(QMetaType::QLineF, QLineF(1.2, 2.3, 3.4, 4.5));
+    QJsonObject jsonObj;
+    jsonObj["a"] = 4;
+//    TEST(QMetaType::QJsonObject, jsonObj);
     TEST(QMetaType::QJsonDocument, QJsonDocument::fromJson("{\"x\": 1, \"y\": 2}"));
     TEST(QMetaType::QFont, QFont("Tahoma", 15, 5, true));
     TEST(QMetaType::QPolygon, QPolygon(QVector<QPoint>() << QPoint(1, 2) << QPoint(3, 4)));
@@ -105,7 +123,8 @@ void basic::test_case1()
     TEST(QMetaType::QVector2D, QVector2D(1.2f, 3.4f));
     TEST(QMetaType::QVector3D, QVector3D(1.2f, 3.4f, 5.6f));
     TEST(QMetaType::QVector4D, QVector4D(1.2f, 3.4f, 5.6f, 7.8f));
-//    TEST(QMetaType::QImage, QImage(":/icon.png"));
+    TEST(QMetaType::QVariantMap, map);
+    TEST_NO_MSG(QMetaType::QImage, QImage(":/icon.png"));
 }
 
 QTEST_APPLESS_MAIN(basic)

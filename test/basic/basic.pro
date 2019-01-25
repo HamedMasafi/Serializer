@@ -17,5 +17,5 @@ HEADERS += \
     ../../src/stringserializer.h \
     ../../src/binaryserializer.h
 
-#RESOURCES += \
-#    res.qrc
+RESOURCES += \
+    res.qrc

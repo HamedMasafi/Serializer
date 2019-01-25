@@ -13,13 +13,16 @@ public:
 
 private:
     QList<int> toListInt(const QString &s) const;
-    QString fromList(const QList<int> &list) const;
-
     QList<qreal> toListReal(const QString &s) const;
-    QString fromList(const QList<qreal> &list) const;
+    QList<float> toListFloat(const QString &s) const;
 
-    QString escapeString(QString &str);
-    QString unescapeString(QString &str);
+    QString fromList(const QList<int> &list) const;
+    QString fromList(const QList<qreal> &list) const;
+    QString fromList(const QList<float> &list) const;
+
+    QString escapeString(QString &str) const;
+    QString unescapeString(QString &str) const;
+    void readString(QString &text, QString &out);
 };
 
 #endif // STRINGSERIALIZER_H

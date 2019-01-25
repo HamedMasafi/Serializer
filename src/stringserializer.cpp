@@ -146,23 +146,33 @@ QVariant StringSerializer::fromString(const QString &value, const QMetaType::Typ
         return bita;
     }
 
+    case QMetaType::QVariantMap: {
+        QVariantMap ret;
+        QStringList parts = value.split("\n");
+        foreach (QString p, parts) {
+            if (p.isEmpty())
+                continue;
+
+        }
+    }
+
 #ifdef QT_GUI_LIB
     case QMetaType::QVector2D: {
-        QList<qreal> parts = toListReal(value);
+        QList<float> parts = toListFloat(value);
         if (parts.size() != 2)
             return QVector2D();
 
         return QVector2D(parts.at(0), parts.at(1));
     }
     case QMetaType::QVector3D: {
-        QList<qreal> parts = toListReal(value);
+        QList<float> parts = toListFloat(value);
         if (parts.size() != 3)
             return QVector3D();
 
         return QVector3D(parts.at(0), parts.at(1), parts.at(2));
     }
     case QMetaType::QVector4D: {
-        QList<qreal> parts = toListReal(value);
+        QList<float> parts = toListFloat(value);
         if (parts.size() != 4)
             return QVector4D();
 
@@ -282,6 +292,9 @@ QString StringSerializer::toString(const QVariant &value) const
     case QMetaType::QJsonDocument:
         return QString(value.toJsonDocument().toJson(QJsonDocument::Compact));
 
+//    case QMetaType::QJsonObject:
+//        return QString(value.toJsonObject().to.toJson(QJsonDocument::Compact));
+
     case QMetaType::QBitArray: {
         QString ret;
         QBitArray bita = value.toBitArray();
@@ -289,19 +302,34 @@ QString StringSerializer::toString(const QVariant &value) const
             ret.append(bita.at(i) ? "1" : "0");
         return ret;
     }
+    case QMetaType::QVariantMap: {
+        QString ret;
+        QVariantMap map = value.toMap();
+        foreach (QString k, map.keys()) {
+            if (!ret.isEmpty())
+                ret.append("\n");
+            QVariant v = map.value(k);
+            QString str = toString(v);
+            ret.append(QString("\"%1\" \"%2\"")
+                       .arg(escapeString(k))
+                       .arg(escapeString(str)));
+
+        }
+        return ret;
+    }
 
 #ifdef QT_GUI_LIB
     case QMetaType::QVector2D: {
         QVector2D vec = value.value<QVector2D>();
-        return fromList(QList<qreal>() << vec.x() << vec.y());
+        return fromList(QList<float>() << vec.x() << vec.y());
     }
     case QMetaType::QVector3D: {
         QVector3D vec = value.value<QVector3D>();
-        return fromList(QList<qreal>() << vec.x() << vec.y() << vec.z());
+        return fromList(QList<float>() << vec.x() << vec.y() << vec.z());
     }
     case QMetaType::QVector4D: {
         QVector4D vec = value.value<QVector4D>();
-        return fromList(QList<qreal>() << vec.x() << vec.y() << vec.z() << vec.w());
+        return fromList(QList<float>() << vec.x() << vec.y() << vec.z() << vec.w());
     }
 
     case QMetaType::QImage: {
@@ -391,6 +419,20 @@ QList<qreal> StringSerializer::toListReal(const QString &s) const
     return ret;
 }
 
+QList<float> StringSerializer::toListFloat(const QString &s) const
+{
+    auto parts = s.split(",");
+    QList<float> ret;
+    foreach (QString p, parts) {
+        bool ok;
+        ret.append(p.toFloat(&ok));
+        if (!ok)
+            return ret;
+    }
+
+    return ret;
+}
+
 QString StringSerializer::fromList(const QList<qreal> &list) const
 {
     QString ret;
@@ -402,7 +444,18 @@ QString StringSerializer::fromList(const QList<qreal> &list) const
     return ret;
 }
 
-QString StringSerializer::escapeString(QString &str)
+QString StringSerializer::fromList(const QList<float> &list) const
+{
+    QString ret;
+    foreach (float n, list) {
+        if (!ret.isEmpty())
+            ret.append(",");
+        ret.append(QString::number(static_cast<double>(n)));
+    }
+    return ret;
+}
+
+QString StringSerializer::escapeString(QString &str) const
 {
     return str
             .replace("\\", "\\\\")
@@ -417,7 +470,7 @@ QString StringSerializer::escapeString(QString &str)
             .replace("\v", "\\v");
 }
 
-QString StringSerializer::unescapeString(QString &str)
+QString StringSerializer::unescapeString(QString &str) const
 {
     return str
             .replace("\\\"", "\"")
@@ -430,4 +483,18 @@ QString StringSerializer::unescapeString(QString &str)
             .replace("\\t", "\t")
             .replace("\\v", "\v")
             .replace("\\\\", "\\");
+}
+
+void StringSerializer::readString(QString &text, QString &out)
+{
+    int start = -1;
+    int end = -1;
+
+    int quotecount = 0;
+    bool found = false;
+    for (int i = 0; i < text.length(); ++i) {
+        if (text.at(i) == '"')
+            quotecount++;
+
+    }
 }
