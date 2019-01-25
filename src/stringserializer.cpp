@@ -166,7 +166,7 @@ QVariant StringSerializer::fromString(const QString &value, const QMetaType::Typ
         if (parts.size() != 4)
             return QVector4D();
 
-        return QVector4D(parts.at(0), parts.at(1), parts.at(3), parts.at(4));
+        return QVector4D(parts.at(0), parts.at(1), parts.at(2), parts.at(3));
     }
 
     case QMetaType::QImage: {
@@ -400,4 +400,34 @@ QString StringSerializer::fromList(const QList<qreal> &list) const
         ret.append(QString::number(n));
     }
     return ret;
+}
+
+QString StringSerializer::escapeString(QString &str)
+{
+    return str
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+            .replace("\r", "\\r")
+            .replace("\n", "\\n")
+            .replace("\a", "\\a")
+            .replace("\b", "\\b")
+            .replace("\f", "\\f")
+            .replace("\'", "\\'")
+            .replace("\t", "\\t")
+            .replace("\v", "\\v");
+}
+
+QString StringSerializer::unescapeString(QString &str)
+{
+    return str
+            .replace("\\\"", "\"")
+            .replace("\\r", "\r")
+            .replace("\\n", "\n")
+            .replace("\\a", "\a")
+            .replace("\\b", "\b")
+            .replace("\\f", "\f")
+            .replace("\\'", "\'")
+            .replace("\\t", "\t")
+            .replace("\\v", "\v")
+            .replace("\\\\", "\\");
 }
