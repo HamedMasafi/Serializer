@@ -41,8 +41,9 @@ QVariant StringSerializer::fromString(const QString &value, const QMetaType::Typ
 {
     switch (type) {
     case QMetaType::Char:
-    case QMetaType::Int:        return value.toInt();
     case QMetaType::SChar:
+    case QMetaType::Int:        return value.toInt();
+    case QMetaType::UChar:
     case QMetaType::UInt:       return value.toUInt();
     case QMetaType::Short:      return value.toShort();
     case QMetaType::UShort:     return value.toUShort();
@@ -52,21 +53,20 @@ QVariant StringSerializer::fromString(const QString &value, const QMetaType::Typ
     case QMetaType::ULongLong:  return qVariantFromValue(value.toULongLong());
     case QMetaType::Float:      return value.toFloat();
     case QMetaType::Double:     return value.toDouble();
-    case QMetaType::QString:    return value;
+    case QMetaType::QString:    return unescapeString(value);
     case QMetaType::QDate:      return QDate::fromString(value, DATE_FORMAT);
     case QMetaType::QTime:      return QTime::fromString(value, TIME_FORMAT);
     case QMetaType::QDateTime:  return QDateTime::fromString(value, DATE_FORMAT " " TIME_FORMAT);
     case QMetaType::QUrl:       return QUrl(value);
     case QMetaType::QChar:      return value.at(0);
     case QMetaType::QStringList: {
-        int pos = value.indexOf(" ");
-        QList<int> lens = toListInt(value.left(pos));
         QStringList ret;
-        pos++;
-        foreach (int n, lens) {
-            ret.append(value.mid(pos, n));
-            pos += n;
-        }
+        QString copy(value);
+        QString out;
+
+        while (readString(copy, out) )
+            ret.append(out);
+
         return ret;
     }
 
@@ -129,6 +129,7 @@ QVariant StringSerializer::fromString(const QString &value, const QMetaType::Typ
 
     case QMetaType::QUuid:
         return QUuid::fromString(value);
+
     case QMetaType::QByteArray:
         return value.toUtf8();
 
@@ -233,18 +234,22 @@ QString StringSerializer::toString(const QVariant &value) const
     case QMetaType::SChar:
     case QMetaType::QChar:
     case QMetaType::QUrl:
-    case QMetaType::QString:
         return value.toString();
-//    case QMetaType::QChar:
-//        return value.toChar().digitValue();
+
+    case QMetaType::QString:
+        return escapeString(value.toString());
 
     case QMetaType::QStringList: {
-        QList<int> lens;
+        QString ret;
         QStringList sl = value.toStringList();
-        foreach (QString s, sl)
-            lens.append(s.length());
+        foreach (QString s, sl) {
+            if (!ret.isEmpty())
+                ret.append(" ");
 
-        return fromList(lens) + " " + sl.join("");
+            ret.append("\"" + escapeString(s) + "\"");
+        }
+
+        return ret;
     }
 
     case QMetaType::QUuid:
@@ -455,37 +460,82 @@ QString StringSerializer::fromList(const QList<float> &list) const
     return ret;
 }
 
-QString StringSerializer::escapeString(QString &str) const
+#define CASE_W(o, r) \
+    case o:                  \
+        ret.append(r);     \
+        break;
+QString StringSerializer::escapeString(const QString &str) const
 {
-    return str
-            .replace("\\", "\\\\")
-            .replace("\"", "\\\"")
-            .replace("\r", "\\r")
-            .replace("\n", "\\n")
-            .replace("\a", "\\a")
-            .replace("\b", "\\b")
-            .replace("\f", "\\f")
-            .replace("\'", "\\'")
-            .replace("\t", "\\t")
-            .replace("\v", "\\v");
+    QString ret;
+    for (int i = 0; i < str.length(); ++i) {
+        switch (str.at(i).cell()) {
+        CASE_W('\\', "\\\\")
+        CASE_W('\r', "\\r")
+        CASE_W('\n', "\\n")
+        CASE_W('\a', "\\a")
+        CASE_W('\b', "\\b")
+        CASE_W('\f', "\\f")
+        CASE_W('\'', "\\'")
+        CASE_W('\t', "\\t")
+        CASE_W('\v', "\\v")
+        CASE_W('\"', "\\\"")
+
+        default:
+            ret.append(str.at(i));
+        }
+    }
+    return ret;
 }
 
-QString StringSerializer::unescapeString(QString &str) const
+QString StringSerializer::unescapeString(const QString &str) const
 {
-    return str
-            .replace("\\\"", "\"")
-            .replace("\\r", "\r")
-            .replace("\\n", "\n")
-            .replace("\\a", "\a")
-            .replace("\\b", "\b")
-            .replace("\\f", "\f")
-            .replace("\\'", "\'")
-            .replace("\\t", "\t")
-            .replace("\\v", "\v")
-            .replace("\\\\", "\\");
+    QString ret;
+    for (int i = 0; i < str.length(); ++i) {
+        if (str.at(i) == '\\' && str.length() > i) {
+            switch (str.at(++i).cell()) {
+            case '\\':
+                ret.append("\\");
+                break;
+            case 'r':
+                ret.append("\r");
+                break;
+            case 'n':
+                ret.append("\n");
+                break;
+            case 'a':
+                ret.append("\a");
+                break;
+            case 'b':
+                ret.append("b");
+                break;
+            case 'f':
+                ret.append("\f");
+                break;
+            case '\'':
+                ret.append("\\'");
+                break;
+            case 't':
+                ret.append("\t");
+                break;
+            case 'v':
+                ret.append("\v");
+                break;
+            case '"':
+                ret.append("\\\"");
+                break;
+
+            default:
+                ret.append(str.at(i));
+            }
+        } else {
+            ret.append(str.at(i));
+        }
+    }
+
+    return ret;
 }
 
-void StringSerializer::readString(QString &text, QString &out)
+bool StringSerializer::readString(QString &text, QString &out) const
 {
     int start = -1;
     int end = -1;
@@ -500,6 +550,8 @@ void StringSerializer::readString(QString &text, QString &out)
         if (end != -1){
             out = text.mid(start + 1, end - start - 1);
             text = text.mid(end + 1);
+            return true;
         }
     }
+    return false;
 }
