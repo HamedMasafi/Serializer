@@ -21,8 +21,8 @@ private:
     QString fromList(const QList<qreal> &list) const;
     QString fromList(const QList<float> &list) const;
 
-    QString escapeString(const QString &str) const;
-    QString unescapeString(const QString &str) const;
+    virtual QString escapeString(const QString &str) const;
+    virtual QString unescapeString(const QString &str) const;
 };
 
 #endif // STRINGSERIALIZER_H

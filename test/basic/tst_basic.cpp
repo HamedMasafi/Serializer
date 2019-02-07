@@ -19,11 +19,13 @@ class basic : public QObject
 public:
     basic();
     ~basic();
+    void types(AbstractSerializer &ser);
 
 private slots:
     void initTestCase();
     void cleanupTestCase();
-    void types();
+    void testString();
+    void testBinary();
     void getString();
 };
 
@@ -47,6 +49,18 @@ void basic::cleanupTestCase()
 
 }
 
+void basic::testString()
+{
+    StringSerializer s;
+    types(s);
+}
+
+void basic::testBinary()
+{
+    BinarySerializer b;
+    types(b);
+}
+
 #define TEST(type, value) \
     do{ \
     v = QVariant(value); \
@@ -68,9 +82,8 @@ void basic::cleanupTestCase()
     QVERIFY2(deserialized == v, "verfy faild for" #type); \
     } while (false)
 
-void basic::types()
+void basic::types(AbstractSerializer &ser)
 {
-    StringSerializer ser;
     QVariant v;
     QString tmp;
     QVariant deserialized;
