@@ -10,7 +10,7 @@ public:
 
     QVariant fromString(const QString &value, const QMetaType::Type &type) const;
     QString toString(const QVariant &value) const;
-    void readString(QString &text, QString &out);
+    bool readString(QString &text, QString &out) const;
 
 private:
     QList<int> toListInt(const QString &s) const;
@@ -21,8 +21,8 @@ private:
     QString fromList(const QList<qreal> &list) const;
     QString fromList(const QList<float> &list) const;
 
-    QString escapeString(QString &str) const;
-    QString unescapeString(QString &str) const;
+    virtual QString escapeString(const QString &str) const;
+    virtual QString unescapeString(const QString &str) const;
 };
 
 #endif // STRINGSERIALIZER_H

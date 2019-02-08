@@ -19,11 +19,13 @@ class basic : public QObject
 public:
     basic();
     ~basic();
+    void types(AbstractSerializer &ser);
 
 private slots:
     void initTestCase();
     void cleanupTestCase();
-    void types();
+    void testString();
+    void testBinary();
     void getString();
 };
 
@@ -47,6 +49,18 @@ void basic::cleanupTestCase()
 
 }
 
+void basic::testString()
+{
+    StringSerializer s;
+    types(s);
+}
+
+void basic::testBinary()
+{
+    BinarySerializer b;
+    types(b);
+}
+
 #define TEST(type, value) \
     do{ \
     v = QVariant(value); \
@@ -68,9 +82,8 @@ void basic::cleanupTestCase()
     QVERIFY2(deserialized == v, "verfy faild for" #type); \
     } while (false)
 
-void basic::types()
+void basic::types(AbstractSerializer &ser)
 {
-    StringSerializer ser;
     QVariant v;
     QString tmp;
     QVariant deserialized;
@@ -86,15 +99,16 @@ void basic::types()
     TEST(QMetaType::UShort, 6);
     TEST(QMetaType::Long, 6);
     TEST(QMetaType::ULong, 5u);
-    TEST(QMetaType::LongLong, 6LL);
-    TEST(QMetaType::ULongLong, 5ULL);
+    TEST(QMetaType::LongLong, 6ll);
+    TEST(QMetaType::ULongLong, 5ull);
     TEST(QMetaType::Float, 3.14f);
     TEST(QMetaType::Double, 1024.2048);
-    TEST(QMetaType::QString, "test");
+    TEST(QMetaType::QString, "test \r text \n p");
     TEST(QMetaType::QChar, QChar('z'));
     TEST(QMetaType::Char, 'c');
     TEST(QMetaType::Char, 'ز');
-    TEST(QMetaType::SChar, 255);
+    TEST(QMetaType::SChar, -120);
+    TEST(QMetaType::UChar, 255);
     TEST(QMetaType::QDate, QDate::currentDate());
     TEST(QMetaType::QTime, QTime::currentTime());
     TEST(QMetaType::QDateTime, QDateTime::currentDateTime());
@@ -115,7 +129,7 @@ void basic::types()
     QJsonObject jsonObj;
     jsonObj["a"] = 4;
 //    TEST(QMetaType::QJsonObject, jsonObj);
-    TEST(QMetaType::QJsonDocument, QJsonDocument::fromJson("{\"x\": 1, \"y\": 2}"));
+    TEST(QMetaType::QJsonDocument, QJsonDocument::fromVariant(map));
     TEST(QMetaType::QFont, QFont("Tahoma", 15, 5, true));
     TEST(QMetaType::QPolygon, QPolygon(QVector<QPoint>() << QPoint(1, 2) << QPoint(3, 4)));
     TEST(QMetaType::QPolygonF, QPolygonF(QVector<QPointF>() << QPointF(1.2, 2.5) << QPointF(3.4, 4.5)));
