@@ -253,9 +253,9 @@ QString StringSerializer::toString(const QVariant &value) const
     case QMetaType::QByteArray:
         return QString(value.toByteArray());
 
-    case QMetaType::QDate:          return value.toDate().toString(DATE_FORMAT);
-    case QMetaType::QTime:          return value.toTime().toString(TIME_FORMAT);
-    case QMetaType::QDateTime:      return value.toDateTime().toString(DATE_FORMAT " " TIME_FORMAT);
+    case QMetaType::QDate:          return value.toDate().toString(Qt::ISODate);
+    case QMetaType::QTime:          return value.toTime().toString(Qt::ISODate);
+    case QMetaType::QDateTime:      return value.toDateTime().toString(Qt::ISODate);
 
     case QMetaType::QPoint: {
         QPoint pt = value.toPoint();

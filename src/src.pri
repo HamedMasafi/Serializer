@@ -1,12 +1,13 @@
+INCLUDEPATH += $$PWD
 
 SOURCES += \
-    abstractserializer.cpp \
-    stringserializer.cpp \
-    binaryserializer.cpp
+    $$PWD/abstractserializer.cpp \
+    $$PWD/stringserializer.cpp \
+    $$PWD/binaryserializer.cpp
 
 HEADERS += \
-        serializer_global.h \ 
-    abstractserializer.h \
-    stringserializer.h \
-    binaryserializer.h
+    $$PWD/serializer_global.h \
+    $$PWD/abstractserializer.h \
+    $$PWD/stringserializer.h \
+    $$PWD/binaryserializer.h
 
