@@ -33,11 +33,10 @@ QVariant BinarySerializer::fromString(const QString &value, const QMetaType::Typ
     QByteArray data = QByteArray::fromBase64(value.toLocal8Bit());
     QDataStream ds(&data,QIODevice::ReadOnly);
     ds >> v;
-    switch (type) {
-    case QMetaType::QJsonDocument:
-        v = QVariant(QJsonDocument::fromJson(v.toByteArray()));
-        break;
-    }
+
+    if (type == QMetaType::QJsonDocument)
+        return QVariant(QJsonDocument::fromJson(v.toByteArray()));
+
     return v;
 }
 
