@@ -32,7 +32,7 @@
 
 #define DATE_FORMAT "yyyy-MM-dd"
 #define TIME_FORMAT "HH-mm-ss.zzz"
-StringSerializer::StringSerializer()
+StringSerializer::StringSerializer() : AbstractSerializer ()
 {
 
 }
@@ -136,6 +136,29 @@ QVariant StringSerializer::fromString(const QString &value, const QMetaType::Typ
     case QMetaType::QJsonDocument:
         return QJsonDocument::fromJson(value.toUtf8());
 
+    case QMetaType::QJsonObject:
+        return QJsonDocument::fromJson(value.toUtf8()).object();
+
+    case QMetaType::QJsonArray:
+        return QJsonDocument::fromJson(value.toUtf8()).array();
+
+    case QMetaType::QJsonValue: {
+        if (value == "true")
+            return QJsonValue(true);
+        else if (value == "false")
+            return QJsonValue(false);
+        bool ok;
+        int n = value.toInt(&ok);
+        if (ok)
+            return QJsonValue(n);
+
+        double d = value.toDouble(&ok);
+        if (ok)
+            return QJsonValue(d);
+
+        return QJsonValue(value);
+    }
+
     case QMetaType::QBitArray: {
         QBitArray bita(value.size());
         for (int i = 0; i < value.size(); ++i) {
@@ -153,8 +176,26 @@ QVariant StringSerializer::fromString(const QString &value, const QMetaType::Typ
         foreach (QString p, parts) {
             if (p.isEmpty())
                 continue;
-
+            QString name;
+            QString value;
+            if (readString(p, name) && readString(p, value))
+                ret.insert(name, value);
         }
+        return ret;
+    }
+
+    case QMetaType::QVariantList: {
+        QVariantMap ret;
+        QStringList parts = value.split("\n");
+        foreach (QString p, parts) {
+            if (p.isEmpty())
+                continue;
+            QString name;
+            QString value;
+            if (readString(p, name) && readString(p, value))
+                ret.insert(name, value);
+        }
+        return ret;
     }
 
 #ifdef QT_GUI_LIB
@@ -220,7 +261,6 @@ QString StringSerializer::toString(const QVariant &value) const
     switch (type) {
     case QMetaType::Bool:
     case QMetaType::Char:
-    case QMetaType::UChar:
     case QMetaType::Short:
     case QMetaType::UShort:
     case QMetaType::Int:
@@ -231,10 +271,13 @@ QString StringSerializer::toString(const QVariant &value) const
     case QMetaType::ULongLong:
     case QMetaType::Double:
     case QMetaType::Float:
-    case QMetaType::SChar:
     case QMetaType::QChar:
     case QMetaType::QUrl:
         return value.toString();
+
+    case QMetaType::UChar:
+    case QMetaType::SChar:
+        return QString::number(value.toInt());
 
     case QMetaType::QString:
         return escapeString(value.toString());
@@ -258,9 +301,9 @@ QString StringSerializer::toString(const QVariant &value) const
     case QMetaType::QByteArray:
         return QString(value.toByteArray());
 
-    case QMetaType::QDate:          return value.toDate().toString(Qt::ISODate);
-    case QMetaType::QTime:          return value.toTime().toString(Qt::ISODate);
-    case QMetaType::QDateTime:      return value.toDateTime().toString(Qt::ISODate);
+    case QMetaType::QDate:          return value.toDate().toString(DATE_FORMAT);
+    case QMetaType::QTime:          return value.toTime().toString(TIME_FORMAT);
+    case QMetaType::QDateTime:      return value.toDateTime().toString(DATE_FORMAT " " TIME_FORMAT);
 
     case QMetaType::QPoint: {
         QPoint pt = value.toPoint();
@@ -297,8 +340,20 @@ QString StringSerializer::toString(const QVariant &value) const
     case QMetaType::QJsonDocument:
         return QString(value.toJsonDocument().toJson(QJsonDocument::Compact));
 
-//    case QMetaType::QJsonObject:
-//        return QString(value.toJsonObject().to.toJson(QJsonDocument::Compact));
+    case QMetaType::QJsonObject: {
+        QJsonDocument doc;
+        doc.setObject(value.toJsonObject());
+        return doc.toJson();
+    }
+
+    case QMetaType::QJsonArray: {
+        QJsonDocument doc;
+        doc.setArray(value.toJsonArray());
+        return doc.toJson();
+    }
+
+    case QMetaType::QJsonValue:
+        return value.toJsonValue().toVariant().toString();
 
     case QMetaType::QBitArray: {
         QString ret;
@@ -375,9 +430,6 @@ QString StringSerializer::toString(const QVariant &value) const
         return value.value<QFont>().toString();
 #endif
 
-    case QMetaType::QJsonArray:
-    case QMetaType::QJsonValue:
-    case QMetaType::QJsonObject:
     default:
         qWarning("The type (%s) does not supported",
                  QMetaType::typeName(type));
@@ -555,3 +607,4 @@ bool StringSerializer::readString(QString &text, QString &out) const
     }
     return false;
 }
+

@@ -8,11 +8,11 @@ class StringSerializer : public AbstractSerializer
 public:
     StringSerializer();
 
-    QVariant fromString(const QString &value, const QMetaType::Type &type) const;
-    QString toString(const QVariant &value) const;
     bool readString(QString &text, QString &out) const;
 
 private:
+    QVariant fromString(const QString &value, const QMetaType::Type &type) const override;
+    QString toString(const QVariant &value) const override;
     QList<int> toListInt(const QString &s) const;
     QList<qreal> toListReal(const QString &s) const;
     QList<float> toListFloat(const QString &s) const;
@@ -21,8 +21,8 @@ private:
     QString fromList(const QList<qreal> &list) const;
     QString fromList(const QList<float> &list) const;
 
-    virtual QString escapeString(const QString &str) const;
-    virtual QString unescapeString(const QString &str) const;
+    virtual QString escapeString(const QString &str) const override;
+    virtual QString unescapeString(const QString &str) const override;
 };
 
 #endif // STRINGSERIALIZER_H
