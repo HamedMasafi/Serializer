@@ -257,7 +257,7 @@ QVariant StringSerializer::fromString(const QString &value, const QMetaType::Typ
 
 QString StringSerializer::toString(const QVariant &value) const
 {
-    QMetaType::Type type = static_cast<QMetaType::Type>(value.type());
+    auto type = static_cast<QMetaType::Type>(value.type());
     switch (type) {
     case QMetaType::Bool:
     case QMetaType::Char:
@@ -371,8 +371,7 @@ QString StringSerializer::toString(const QVariant &value) const
             QVariant v = map.value(k);
             QString str = toString(v);
             ret.append(QString("\"%1\" \"%2\"")
-                       .arg(escapeString(k))
-                       .arg(escapeString(str)));
+                       .arg(escapeString(k), escapeString(str)));
 
         }
         return ret;

@@ -1,15 +1,6 @@
 #include "abstractserializer.h"
 
 
-AbstractSerializer::AbstractSerializer()
-{
-}
-
-AbstractSerializer::~AbstractSerializer()
-{
-
-}
-
 QVariant AbstractSerializer::deserialize(const QString &value, const QMetaType::Type &type) const
 {
     return fromString(unescapeString(value), type);

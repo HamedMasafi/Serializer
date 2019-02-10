@@ -44,7 +44,7 @@ QVariant BinarySerializer::fromString(const QString &value, const QMetaType::Typ
 QString BinarySerializer::toString(const QVariant &value) const
 {
     QVariant copy;
-    QMetaType::Type type = static_cast<QMetaType::Type>(value.type());
+    auto type = static_cast<QMetaType::Type>(value.type());
     switch (type) {
     case QMetaType::QJsonDocument:
         copy = value.value<QJsonDocument>().toJson();

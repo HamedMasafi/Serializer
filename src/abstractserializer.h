@@ -8,8 +8,8 @@ class AbstractSerializer
 {
 
 public:
-    AbstractSerializer();
-    virtual ~AbstractSerializer();
+    AbstractSerializer() = default;
+    virtual ~AbstractSerializer() = default;
     virtual QVariant deserialize(const QString &value, const QMetaType::Type &type) const;
     virtual QString serialize(const QVariant &value) const;
 
