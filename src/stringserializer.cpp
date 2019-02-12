@@ -343,13 +343,13 @@ QString StringSerializer::toString(const QVariant &value) const
     case QMetaType::QJsonObject: {
         QJsonDocument doc;
         doc.setObject(value.toJsonObject());
-        return doc.toJson();
+        return doc.toJson(QJsonDocument::Compact);
     }
 
     case QMetaType::QJsonArray: {
         QJsonDocument doc;
         doc.setArray(value.toJsonArray());
-        return doc.toJson();
+        return doc.toJson(QJsonDocument::Compact);
     }
 
     case QMetaType::QJsonValue:
