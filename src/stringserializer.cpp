@@ -128,7 +128,7 @@ QVariant StringSerializer::fromString(const QString &value, const QMetaType::Typ
     }
 
     case QMetaType::QUuid:
-        return QUuid::fromString(value);
+        return QUuid(value);
 
     case QMetaType::QByteArray:
         return value.toUtf8();
@@ -438,7 +438,12 @@ QString StringSerializer::toString(const QVariant &value) const
 
 QList<int> StringSerializer::toListInt(const QString &s) const
 {
-    auto parts = s.split(",");
+    return toListInt(s, ",");
+}
+
+QList<int> StringSerializer::toListInt(const QString &s, const QString &sep) const
+{
+    auto parts = s.split(sep);
     QList<int> ret;
     foreach (QString p, parts) {
         bool ok;
@@ -448,6 +453,11 @@ QList<int> StringSerializer::toListInt(const QString &s) const
     }
 
     return ret;
+}
+
+QList<qreal> StringSerializer::toListReal(const QString &s) const
+{
+    return toListReal(s, ",");
 }
 
 QString StringSerializer::fromList(const QList<int> &list) const
@@ -461,9 +471,9 @@ QString StringSerializer::fromList(const QList<int> &list) const
     return ret;
 }
 
-QList<qreal> StringSerializer::toListReal(const QString &s) const
+QList<qreal> StringSerializer::toListReal(const QString &s, const QString &sep) const
 {
-    auto parts = s.split(",");
+    auto parts = s.split(sep);
     QList<qreal> ret;
     foreach (QString p, parts) {
         bool ok;
