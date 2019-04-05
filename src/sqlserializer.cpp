@@ -15,14 +15,14 @@ QString SqlSerializer::escapeString(const QString &str) const
 {
     QString ret;
     for (int i = 0; i < str.length(); ++i) {
-        switch (str.at(i).cell()) {
+        switch (str.at(i).toLatin1()) {
         CASE_W('\\', "\\\\")
         CASE_W('\r', "\\r")
         CASE_W('\n', "\\n")
         CASE_W('\a', "\\a")
         CASE_W('\b', "\\b")
         CASE_W('\f', "\\f")
-        CASE_W('\'', "''")
+        CASE_W('\'', "'*'")
         CASE_W('\t', "\\t")
         CASE_W('\v', "\\v")
 //        CASE_W('\"', "\\\"")
