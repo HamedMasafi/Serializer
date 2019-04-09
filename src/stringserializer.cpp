@@ -40,6 +40,7 @@ StringSerializer::StringSerializer() : AbstractSerializer ()
 QVariant StringSerializer::fromString(const QString &value, const QMetaType::Type &type) const
 {
     switch (type) {
+    case QMetaType::Bool:       return !value.compare("true", Qt::CaseInsensitive) || value == "1";
     case QMetaType::Char:
     case QMetaType::SChar:
     case QMetaType::Int:        return value.toInt();
