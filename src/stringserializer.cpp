@@ -537,7 +537,7 @@ QString StringSerializer::escapeString(const QString &str) const
         CASE_W('\a', "\\a")
         CASE_W('\b', "\\b")
         CASE_W('\f', "\\f")
-        CASE_W('\'', "\\'")
+//        CASE_W('\'', "\\'")
         CASE_W('\t', "\\t")
         CASE_W('\v', "\\v")
         CASE_W('\"', "\\\"")
@@ -573,9 +573,9 @@ QString StringSerializer::unescapeString(const QString &str) const
             case 'f':
                 ret.append("\f");
                 break;
-            case '\'':
-                ret.append("\\'");
-                break;
+//            case '\'':
+//                ret.append("\\'");
+//                break;
             case 't':
                 ret.append("\t");
                 break;
