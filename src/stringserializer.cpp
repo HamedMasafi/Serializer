@@ -430,6 +430,20 @@ QString StringSerializer::toString(const QVariant &value) const
         return value.value<QFont>().toString();
 #endif
 
+    case QMetaType::QVariantList: {
+        auto l = value.toList();
+        QString ret;
+
+        foreach (QVariant v, l) {
+            if (!ret.isEmpty())
+                ret.append(", ");
+            ret.append(toString(v));
+        }
+
+        return "(" + ret + ")";
+        break;
+    }
+
     default:
         qWarning("The type (%s) does not supported",
                  QMetaType::typeName(type));
