@@ -281,7 +281,7 @@ QString StringSerializer::toString(const QVariant &value) const
         return QString::number(value.toInt());
 
     case QMetaType::QString:
-        return escapeString(value.toString());
+        return value.toString();
 
     case QMetaType::QStringList: {
         QString ret;
