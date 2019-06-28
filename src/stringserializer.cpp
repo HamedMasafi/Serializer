@@ -40,6 +40,7 @@ StringSerializer::StringSerializer() : AbstractSerializer ()
 QVariant StringSerializer::fromString(const QString &value, const QMetaType::Type &type) const
 {
     switch (type) {
+    case QMetaType::Bool:       return !value.compare("true", Qt::CaseInsensitive) || value == "1";
     case QMetaType::Char:
     case QMetaType::SChar:
     case QMetaType::Int:        return value.toInt();
@@ -280,7 +281,7 @@ QString StringSerializer::toString(const QVariant &value) const
         return QString::number(value.toInt());
 
     case QMetaType::QString:
-        return escapeString(value.toString());
+        return value.toString();
 
     case QMetaType::QStringList: {
         QString ret;
@@ -429,6 +430,20 @@ QString StringSerializer::toString(const QVariant &value) const
         return value.value<QFont>().toString();
 #endif
 
+    case QMetaType::QVariantList: {
+        auto l = value.toList();
+        QString ret;
+
+        foreach (QVariant v, l) {
+            if (!ret.isEmpty())
+                ret.append(", ");
+            ret.append(toString(v));
+        }
+
+        return "(" + ret + ")";
+        break;
+    }
+
     default:
         qWarning("The type (%s) does not supported",
                  QMetaType::typeName(type));
@@ -536,7 +551,7 @@ QString StringSerializer::escapeString(const QString &str) const
         CASE_W('\a', "\\a")
         CASE_W('\b', "\\b")
         CASE_W('\f', "\\f")
-        CASE_W('\'', "\\'")
+//        CASE_W('\'', "\\'")
         CASE_W('\t', "\\t")
         CASE_W('\v', "\\v")
         CASE_W('\"', "\\\"")
@@ -572,9 +587,9 @@ QString StringSerializer::unescapeString(const QString &str) const
             case 'f':
                 ret.append("\f");
                 break;
-            case '\'':
-                ret.append("\\'");
-                break;
+//            case '\'':
+//                ret.append("\\'");
+//                break;
             case 't':
                 ret.append("\t");
                 break;
