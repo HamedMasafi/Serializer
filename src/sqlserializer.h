@@ -9,8 +9,8 @@ public:
     SqlSerializer();
 
 public:
-    QVariant deserialize(const QString &value, const QMetaType::Type &type) const override;
-    QString serialize(const QVariant &value) const override;
+    QString unescapeString(const QString &str) const override;
+    QString escapeString(const QString &str) const override;
 };
 
 #endif // SQLSERIALIZZER_H
