@@ -31,7 +31,7 @@
 #endif
 
 #define DATE_FORMAT "yyyy-MM-dd"
-#define TIME_FORMAT "HH-mm-ss.zzz"
+#define TIME_FORMAT "HH:mm:ss.zzz"
 StringSerializer::StringSerializer() : AbstractSerializer ()
 {
 
