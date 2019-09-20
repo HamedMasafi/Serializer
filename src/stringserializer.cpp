@@ -31,7 +31,7 @@
 #endif
 
 #define DATE_FORMAT "yyyy-MM-dd"
-#define TIME_FORMAT "HH-mm-ss.zzz"
+#define TIME_FORMAT "HH:mm:ss.zzz"
 StringSerializer::StringSerializer() : AbstractSerializer ()
 {
 
@@ -281,7 +281,7 @@ QString StringSerializer::toString(const QVariant &value) const
         return QString::number(value.toInt());
 
     case QMetaType::QString:
-        return escapeString(value.toString());
+        return value.toString();
 
     case QMetaType::QStringList: {
         QString ret;
@@ -429,6 +429,20 @@ QString StringSerializer::toString(const QVariant &value) const
     case QMetaType::QFont:
         return value.value<QFont>().toString();
 #endif
+
+    case QMetaType::QVariantList: {
+        auto l = value.toList();
+        QString ret;
+
+        foreach (QVariant v, l) {
+            if (!ret.isEmpty())
+                ret.append(", ");
+            ret.append(toString(v));
+        }
+
+        return "(" + ret + ")";
+        break;
+    }
 
     default:
         qWarning("The type (%s) does not supported",

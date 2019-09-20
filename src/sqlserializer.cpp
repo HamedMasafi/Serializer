@@ -7,20 +7,17 @@ SqlSerializer::SqlSerializer() :StringSerializer ()
 
 }
 
-//#define CASE_W(o, r) \
-//    case o:                  \
-//        ret.append(r);     \
-//        break;
-//QString SqlSerializer::escapeString(const QString &str) const
-//{
+#define CASE_W(o, r) \
+    case o:                  \
+        ret.append(r);     \
+        break;
+QString SqlSerializer::escapeString(const QString &str) const
+{
 //    QString ret;
 //    for (int i = 0; i < str.length(); ++i) {
-//        switch (str.at(i).toLatin1()) {
+//        switch (str.at(i).cell()) {
 //        CASE_W('\\', "\\\\")
 //        CASE_W('\r', "\\r")
-//        CASE_W('[', "\\[")
-//        CASE_W(']', "\\]")
-//        CASE_W('%', "\\%")
 //        CASE_W('\n', "\\n")
 //        CASE_W('\a', "\\a")
 //        CASE_W('\b', "\\b")
@@ -28,18 +25,19 @@ SqlSerializer::SqlSerializer() :StringSerializer ()
 //        CASE_W('\'', "''")
 //        CASE_W('\t', "\\t")
 //        CASE_W('\v', "\\v")
-//        CASE_W('"', "\\\"")
+////        CASE_W('\"', "\\\"")
 
 //        default:
 //            ret.append(str.at(i));
 //        }
 //    }
-
 //    return ret;
-//}
+    QString ret(str);
+    return ret.replace("'", "''");
+}
 
-//QString SqlSerializer::unescapeString(const QString &str) const
-//{
+QString SqlSerializer::unescapeString(const QString &str) const
+{
 //    QString ret;
 //    for (int i = 0; i < str.length(); ++i) {
 //        if (str.at(i) == '\'' && str.at(i + 1) == '\'' && str.length() > i + 1) {
@@ -83,38 +81,6 @@ SqlSerializer::SqlSerializer() :StringSerializer ()
 //    }
 
 //    return ret;
-//}
-
-//QVariant SqlSerializer::escapeSql(const QString &value) const
-//{
-//    QString ret;
-//    char prev = 0;
-//    QString::const_iterator it;
-//    for (it = value.begin(); it != value.end(); ++it) {
-//        char cur = (*it).toLatin1();
-
-//        if (cur == '\'' && prev == '\\')
-//            ret.append("\\'");
-//        else
-//            ret.append(cur);
-
-//        prev = cur;
-//    }
-//    return ret;
-//}
-
-//QString SqlSerializer::unescapeSql(const QString &value) const
-//{
-//    QString ret = value;
-//    return const_cast<QString&>(value).replace("\\'", "\\'");
-//}
-
-QVariant SqlSerializer::deserialize(const QString &value, const QMetaType::Type &type) const
-{
-    return fromString(const_cast<QString&>(value).replace("''", "'"), type);
-}
-
-QString SqlSerializer::serialize(const QVariant &value) const
-{
-    return toString(value).replace("'", "''");
+    QString ret(str);
+    return ret.replace("''", "'");
 }
