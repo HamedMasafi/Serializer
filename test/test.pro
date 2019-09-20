@@ -1,4 +1,8 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    basic
+    basic \
+    object \
+    variants \
+    containers \
+    enums
