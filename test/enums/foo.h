@@ -19,6 +19,7 @@ public:
         Seven = 8
     };
     Q_DECLARE_FLAGS(SampleFlags, SampleFlag)
+    Q_FLAGS(SampleFlags)
 
 private:
     Q_PROPERTY(Sample sampleEnum READ sampleEnum WRITE setSampleEnum NOTIFY

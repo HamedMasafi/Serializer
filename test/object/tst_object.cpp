@@ -16,7 +16,6 @@ class object : public QObject
 {
     Q_OBJECT
 
-    void initFoo(Foo *);
 public:
     object();
     ~object();
@@ -27,19 +26,6 @@ private slots:
     void cleanupTestCase();
 };
 
-void object::initFoo(Foo *f)
-{
-    f->setN(4);
-    f->setF(3.14f);
-    f->setS("Hi\"There");
-    f->setStrings(QStringList() << "One" << "Two" << "Three");
-    f->setVariants(QVariantList() << "One" << 2 << 3.14);
-    QVariantMap vm;
-    vm.insert("a", "hi");
-    vm.insert("b", 2);
-    vm.insert("c", 'a');
-    f->setVariantMap(vm);
-}
 
 object::object()
 {
@@ -62,10 +48,8 @@ void object::test()
 {
     JsonSerializer s;
     QScopedPointer<Foo> p(new Foo);
-    initFoo(p.data());
 
     auto p2 = new Foo(p.data());
-    initFoo(p2);
     p->setFoo(p2);
 
     QList<Boo*> booList;

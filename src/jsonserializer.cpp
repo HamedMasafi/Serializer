@@ -177,7 +177,7 @@ QJsonObject JsonSerializer::serialize(QObject *obj)
         QString pps(prop.name());
         if (v.isValid()) {
             if (prop.isEnumType())
-                val = toJson(prop.enumerator(), v);
+                val = toJson(prop.enumerator(), obj->property(prop.name()));
             else
                 val = toJson(v);
         }
