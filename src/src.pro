@@ -4,8 +4,6 @@
 #
 #-------------------------------------------------
 
-QT       -= gui
-
 TARGET = Serializer
 TEMPLATE = lib
 
