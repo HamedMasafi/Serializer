@@ -61,31 +61,36 @@ void basic::testBinary()
     types(b);
 }
 
-#define TEST(type, value)
-//\
-//    do{ \
-//    v = QVariant(value); \
-//    tmp = ser.toString(v); \
-//    qDebug() << #type " serialized as" << tmp; \
-//    deserialized = ser.fromString(tmp, type); \
-//    if (deserialized != v) \
-//        qDebug() << v << deserialized; \
-//    QVERIFY2(deserialized == v, "verfy faild for" #type); \
-//    } while (false)
+#ifdef ENABLE_TEST_MACROS
+#define TEST(type, value) \
+    do{ \
+    v = QVariant(value); \
+    tmp = ser.toString(v); \
+    qDebug() << #type " serialized as" << tmp; \
+    deserialized = ser.fromString(tmp, type); \
+    if (deserialized != v) \
+        qDebug() << v << deserialized; \
+    QVERIFY2(deserialized == v, "verfy faild for" #type); \
+    } while (false)
 
+#define TEST_NO_MSG(type, value) \
+    do{ \
+    v = QVariant(value); \
+    tmp = ser.toString(v); \
+    deserialized = ser.fromString(tmp, type); \
+    if (deserialized != v) \
+        qDebug() << v << deserialized; \
+    QVERIFY2(deserialized == v, "verfy faild for" #type); \
+    } while (false)
+#else
+#define TEST(type, value)
 #define TEST_NO_MSG(type, value)
-//\
-//    do{ \
-//    v = QVariant(value); \
-//    tmp = ser.toString(v); \
-//    deserialized = ser.fromString(tmp, type); \
-//    if (deserialized != v) \
-//        qDebug() << v << deserialized; \
-//    QVERIFY2(deserialized == v, "verfy faild for" #type); \
-//    } while (false)
+#endif
 
 void basic::types(AbstractSerializer &ser)
 {
+    Q_UNUSED(ser)
+
     QVariant v;
     QString tmp;
     QVariant deserialized;

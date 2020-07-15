@@ -210,6 +210,8 @@ bool JsonSerializer::deserialize(const QJsonObject &json, QObject *obj)
                 deserialize(jsonValue.toObject(), o);
 
             bool ok = prop.write(obj, QVariant::fromValue(o));
+            if (!ok)
+                qDebug() << "Unable to write" << prop.name() << QVariant::fromValue(o);
             continue;
         }
         if (jsonValue == QJsonValue())
@@ -399,44 +401,44 @@ QVariant JsonSerializer::fromJson(const QMetaType::Type &type,
     QString typeName = QMetaType::typeName(type);
 
     switch (type) {
-    case QVariant::Point: {
+    case QMetaType::QPoint: {
         auto o = value.toObject();
         return QPoint(o.value("x").toInt(), o.value("y").toInt());
     }
-    case QVariant::PointF: {
+    case QMetaType::QPointF: {
         auto o = value.toObject();
         return QPointF(o.value("x").toDouble(), o.value("y").toDouble());
     }
-    case QVariant::Rect: {
+    case QMetaType::QRect: {
         auto o = value.toObject();
         return QRect(o.value("x").toInt(), o.value("y").toInt(),
                      o.value("width").toInt(), o.value("height").toInt());
     }
-    case QVariant::RectF: {
+    case QMetaType::QRectF: {
         auto o = value.toObject();
         return QRectF(o.value("x").toDouble(), o.value("y").toDouble(),
                       o.value("width").toDouble(),
                       o.value("height").toDouble());
     }
-    case QVariant::Font: {
+    case QMetaType::QFont: {
         QFont f;
         f.fromString(value.toString());
         return f;
     }
-    case QVariant::RegularExpression: {
+    case QMetaType::QRegularExpression: {
         return QRegularExpression(value.toString());
     }
-    case QVariant::Locale: {
+    case QMetaType::QLocale: {
         return QLocale(value.toString());
     }
-    case QVariant::Polygon: {
+    case QMetaType::QPolygon: {
         QPolygon poly;
         auto arr = value.toArray();
         foreach (QJsonValue val, arr)
             poly << fromJson(QMetaType::QPoint, val).toPoint();
         return poly;
     }
-    case QVariant::PolygonF: {
+    case QMetaType::QPolygonF: {
         QPolygonF poly;
         auto arr = value.toArray();
         foreach (QJsonValue val, arr)
@@ -562,6 +564,7 @@ QVariantMap JsonSerializer::mapFromJson(const QMetaType::Type &keyType,
                                         const QMetaType::Type &valueType,
                                         const QJsonObject &object)
 {
+    Q_UNUSED(keyType)
     //    QString typeName = QMetaType::typeName(type);// =
     //    object[VARIANT_TYPE].toString();
     QVariantMap map;
