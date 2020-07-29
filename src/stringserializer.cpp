@@ -48,10 +48,10 @@ QVariant StringSerializer::fromString(const QString &value, const QMetaType::Typ
     case QMetaType::UInt:       return value.toUInt();
     case QMetaType::Short:      return value.toShort();
     case QMetaType::UShort:     return value.toUShort();
-    case QMetaType::Long:       return qVariantFromValue(value.toLong());
-    case QMetaType::ULong:      return qVariantFromValue(value.toULong());
+    case QMetaType::Long:       return QVariant::fromValue(value.toLong());
+    case QMetaType::ULong:      return QVariant::fromValue(value.toULong());
     case QMetaType::LongLong:   return value.toLongLong();
-    case QMetaType::ULongLong:  return qVariantFromValue(value.toULongLong());
+    case QMetaType::ULongLong:  return QVariant::fromValue(value.toULongLong());
     case QMetaType::Float:      return value.toFloat();
     case QMetaType::Double:     return value.toDouble();
     case QMetaType::QString:    return unescapeString(value);
