@@ -61,6 +61,7 @@ void basic::testBinary()
     types(b);
 }
 
+#ifdef ENABLE_TEST_MACROS
 #define TEST(type, value) \
     do{ \
     v = QVariant(value); \
@@ -81,9 +82,15 @@ void basic::testBinary()
         qDebug() << v << deserialized; \
     QVERIFY2(deserialized == v, "verfy faild for" #type); \
     } while (false)
+#else
+#define TEST(type, value)
+#define TEST_NO_MSG(type, value)
+#endif
 
 void basic::types(AbstractSerializer &ser)
 {
+    Q_UNUSED(ser)
+
     QVariant v;
     QString tmp;
     QVariant deserialized;

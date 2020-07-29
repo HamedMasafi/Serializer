@@ -4,8 +4,6 @@
 #
 #-------------------------------------------------
 
-QT       -= gui
-
 TARGET = Serializer
 TEMPLATE = lib
 
@@ -24,10 +22,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     abstractserializer.cpp \
+    jsonserializer.cpp \
     stringserializer.cpp \
     binaryserializer.cpp
 
 HEADERS += \
+        jsonserializer.h \
         serializer_global.h \ 
     abstractserializer.h \
     stringserializer.h \
