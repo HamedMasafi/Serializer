@@ -2,8 +2,8 @@
 #define BINARYSERIALIZER_H
 
 #include "abstractserializer.h"
-#include <QJsonDocument>
-#include <QDebug>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QDebug>
 
 class BinarySerializer : public AbstractSerializer
 {

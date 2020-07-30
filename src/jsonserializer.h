@@ -1,11 +1,9 @@
 #ifndef JSONSERIALIZER_H
 #define JSONSERIALIZER_H
 
-#include <QJsonObject>
-#include <QObject>
-#include <QVariant>
-//#include <QMetaProperty>
-//#include <QDebug>
+#include <QtCore/QJsonObject>
+#include <QtCore/QObject>
+#include <QtCore/QVariant>
 
 class JsonSerializer
 {

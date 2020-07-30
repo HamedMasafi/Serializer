@@ -14,9 +14,9 @@
 #include <QtGui/QPolygon>
 #include <QtGui/QPolygonF>
 
-#define VARIANT_TYPE "_type"
-#define VARIANT_VALUE "_value"
-#define CLASS_NAME(x) QString(#x)
+#define VARIANT_TYPE QStringLiteral("_type")
+#define VARIANT_VALUE QStringLiteral("_value")
+#define CLASS_NAME(x) QString::fromUtf8(#x)
 
 template <typename T> bool registerQList()
 {
@@ -174,7 +174,7 @@ QJsonObject JsonSerializer::serialize(QObject *obj)
         QMetaProperty prop = obj->metaObject()->property(i);
         QJsonValue val;
         auto v = prop.read(obj);
-        QString pps(prop.name());
+        QString pps = QString::fromUtf8((prop.name()));
         if (v.isValid()) {
             if (prop.isEnumType())
                 val = toJson(prop.enumerator(), obj->property(prop.name()));
@@ -184,7 +184,7 @@ QJsonObject JsonSerializer::serialize(QObject *obj)
 
         if (val == QJsonValue())
             qDebug() << prop.name();
-        json.insert(prop.name(), val);
+        json.insert(pps, val);
     } // for
     return json;
 }
@@ -193,9 +193,9 @@ bool JsonSerializer::deserialize(const QJsonObject &json, QObject *obj)
 {
     for (int i = 0; i < obj->metaObject()->propertyCount(); i++) {
         QMetaProperty prop   = obj->metaObject()->property(i);
-        QJsonValue jsonValue = json.value(prop.name());
+        QJsonValue jsonValue = json.value(QString::fromUtf8(prop.name()));
 
-        if (QString(prop.typeName()).endsWith("*")) {
+        if (QString::fromUtf8(prop.typeName()).endsWith(QStringLiteral("*"))) {
             if (jsonValue == QJsonValue()) {
                 prop.write(obj, QVariant::fromValue(nullptr));
                 continue;
@@ -220,10 +220,10 @@ bool JsonSerializer::deserialize(const QJsonObject &json, QObject *obj)
             static_cast<QMetaType::Type>(prop.userType()), jsonValue);
 
         QGenericArgument arg(prop.typeName(), propertyValue.data());
-        QString pName(prop.name());
+        QString pName = QString::fromUtf8(prop.name());
         pName[0] = pName[0].toUpper();
-        pName.prepend("set");
-        if (pName == "setObjectName") {
+        pName.prepend(QStringLiteral("set"));
+        if (pName == QStringLiteral("setObjectName")) {
             obj->setObjectName(propertyValue.toString());
         } else {
             //            bool ok = obj->metaObject()->invokeMethod(obj,
@@ -234,7 +234,7 @@ bool JsonSerializer::deserialize(const QJsonObject &json, QObject *obj)
         }
     } // for
 
-    obj->setObjectName(json.value("objectName").toString());
+    obj->setObjectName(json.value(QStringLiteral("objectName")).toString());
     return true;
 }
 
@@ -272,9 +272,9 @@ QJsonValue JsonSerializer::toJson(QVariant v)
 
     QJsonObject o;
 
-    QString typeName = QString(v.typeName());
+    QString typeName = QString::fromUtf8(v.typeName());
 
-    if (typeName.endsWith("*")) {
+    if (typeName.endsWith(QStringLiteral("*"))) {
         auto obj = v.value<QObject *>();
         if (!obj)
             return QJsonValue();
@@ -295,28 +295,28 @@ QJsonValue JsonSerializer::toJson(QVariant v)
         switch (v.type()) {
         case QVariant::Point: {
             auto pt = v.toPoint();
-            return QJsonObject{{"x", pt.x()}, {"y", pt.y()}};
+            return QJsonObject{{ QStringLiteral("x"), pt.x()}, { QStringLiteral("y"), pt.y()}};
             break;
         }
         case QVariant::PointF: {
             auto pt = v.toPointF();
-            return QJsonObject{{"x", pt.x()}, {"y", pt.y()}};
+            return QJsonObject{{ QStringLiteral("x"), pt.x()}, { QStringLiteral("y"), pt.y()}};
             break;
         }
         case QVariant::Rect: {
             auto rc = v.toRect();
-            return QJsonObject{{"x", rc.x()},
-                               {"y", rc.y()},
-                               {"width", rc.width()},
-                               {"height", rc.height()}};
+            return QJsonObject{{ QStringLiteral("x"), rc.x()},
+                               { QStringLiteral("y"), rc.y()},
+                               { QStringLiteral("width"), rc.width()},
+                               { QStringLiteral("height"), rc.height()}};
             break;
         }
         case QVariant::RectF: {
             auto rc = v.toRectF();
-            return QJsonObject{{"x", rc.x()},
-                               {"y", rc.y()},
-                               {"width", rc.width()},
-                               {"height", rc.height()}};
+            return QJsonObject{{ QStringLiteral("x"), rc.x()},
+                               { QStringLiteral("y"), rc.y()},
+                               { QStringLiteral("width"), rc.width()},
+                               { QStringLiteral("height"), rc.height()}};
             break;
         }
         case QVariant::Locale: {
@@ -398,27 +398,31 @@ QVariant JsonSerializer::fromJson(const QMetaType::Type &type,
     if (value == QJsonValue())
         return QVariant();
 
-    QString typeName = QMetaType::typeName(type);
+    QString typeName = QString::fromUtf8(QMetaType::typeName(type));
 
     switch (type) {
     case QMetaType::QPoint: {
         auto o = value.toObject();
-        return QPoint(o.value("x").toInt(), o.value("y").toInt());
+        return QPoint(o.value(QStringLiteral("x")).toInt(), o.value(QStringLiteral("y")).toInt());
     }
     case QMetaType::QPointF: {
         auto o = value.toObject();
-        return QPointF(o.value("x").toDouble(), o.value("y").toDouble());
+        return QPointF(o.value(QStringLiteral("x")).toDouble(),
+                       o.value(QStringLiteral("y")).toDouble());
     }
     case QMetaType::QRect: {
         auto o = value.toObject();
-        return QRect(o.value("x").toInt(), o.value("y").toInt(),
-                     o.value("width").toInt(), o.value("height").toInt());
+        return QRect(o.value(QStringLiteral("x")).toInt(),
+                     o.value(QStringLiteral("y")).toInt(),
+                     o.value(QStringLiteral("width")).toInt(),
+                     o.value(QStringLiteral("height")).toInt());
     }
     case QMetaType::QRectF: {
         auto o = value.toObject();
-        return QRectF(o.value("x").toDouble(), o.value("y").toDouble(),
-                      o.value("width").toDouble(),
-                      o.value("height").toDouble());
+        return QRectF(o.value(QStringLiteral("x")).toDouble(),
+                      o.value(QStringLiteral("y")).toDouble(),
+                      o.value(QStringLiteral("width")).toDouble(),
+                      o.value(QStringLiteral("height")).toDouble());
     }
     case QMetaType::QFont: {
         QFont f;
@@ -448,13 +452,14 @@ QVariant JsonSerializer::fromJson(const QMetaType::Type &type,
     default: break;
     }
     if (value.isArray()) {
-        if (typeName.startsWith("QList<")) {
-            auto name    = typeName.replace("QList<", "").replace(">", "");
+        if (typeName.startsWith(QStringLiteral("QList<"))) {
+            auto name = typeName.replace(QStringLiteral("QList<"), QStringLiteral(""))
+                            .replace(QStringLiteral(">"), QStringLiteral(""));
             auto keyType = static_cast<QMetaType::Type>(
                 QMetaType::type(name.toLatin1().data()));
             return fromJson(keyType, value.toArray());
         }
-        if (typeName == "QStringList") {
+        if (typeName == QStringLiteral("QStringList")) {
             auto keyType = static_cast<QMetaType::Type>(qMetaTypeId<QString>());
             return fromJson(keyType, value.toArray());
         }
@@ -462,18 +467,19 @@ QVariant JsonSerializer::fromJson(const QMetaType::Type &type,
     }
 
     if (value.isObject()) {
-        if (typeName.endsWith("*")) {
+        if (typeName.endsWith(QStringLiteral("*"))) {
             const QMetaObject *metaObject = QMetaType::metaObjectForType(type);
             auto obj                      = metaObject->newInstance();
             deserialize(value.toObject(), obj);
             return QVariant::fromValue(obj);
         }
 
-        if (typeName.startsWith("QMap<")) {
+        if (typeName.startsWith(QStringLiteral("QMap<"))) {
             //            reinterpret_cast<QVariantMap*>(QMetaType::create(type));
 
-            auto parts
-                = typeName.replace("QMap<", "").replace(">", "").split(",");
+            auto parts = typeName.replace(QStringLiteral("QMap<"), QStringLiteral(""))
+                             .replace(QStringLiteral(">"), QStringLiteral(""))
+                             .split(QStringLiteral(","));
             auto keyType = static_cast<QMetaType::Type>(
                 QMetaType::type(parts.at(0).toLatin1().data()));
             auto valueType = static_cast<QMetaType::Type>(
@@ -492,8 +498,8 @@ QVariant JsonSerializer::fromJson(const QMetaType::Type &type,
     //    const QMetaObject *metaObject = QMetaType::metaObjectForType(type);
     //    auto obj = metaObject->newInstance();
 
-    QString typeName
-        = QMetaType::typeName(type); // = object[VARIANT_TYPE].toString();
+    QString typeName = QString::fromUtf8(QMetaType::typeName(type));
+    // = object[VARIANT_TYPE].toString();
                                      //    QVariant::Type type =
     //    QVariant::nameToType(typeName.toLatin1().data());
 
@@ -512,7 +518,7 @@ QVariant JsonSerializer::fromJson(const QMetaType::Type &type,
     //    }
 
     //    if(QMetaType::type(typeName.toLatin1().data())> 1024){
-    if (typeName.endsWith("*")) {
+    if (typeName.endsWith(QStringLiteral("*"))) {
         QObject *obj;
         QVariantMap map;
         QJsonObject mapObject
@@ -581,7 +587,7 @@ QVariantMap JsonSerializer::serializeQObject(QObject *obj)
         for (int i = 0; i < obj->metaObject()->propertyCount(); i++) {
             QMetaProperty property = obj->metaObject()->property(i);
             if (property.isReadable() && property.isWritable())
-                map.insert(property.name(), property.read(obj).toString());
+                map.insert(QString::fromUtf8(property.name()), property.read(obj).toString());
         }
 
     return map;
@@ -592,6 +598,6 @@ void JsonSerializer::deserializeQObject(QObject *obj, QVariantMap map)
     for (int i = 0; i < obj->metaObject()->propertyCount(); i++) {
         QMetaProperty property = obj->metaObject()->property(i);
         if (property.isReadable() && property.isWritable())
-            property.write(obj, map[property.name()].toString());
+            property.write(obj, map[QString::fromUtf8(property.name())].toString());
     }
 }

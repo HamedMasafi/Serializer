@@ -4,11 +4,11 @@
 #include <QtTest>
 
 #include <QPoint>
-#include <QDebug>
-#include <QVector>
-#include <QPolygon>
-#include <binaryserializer.h>
+#include <QtCore/QDebug>
+#include <QtCore/QVector>
+#include <QtCore/QPolygon>
 
+#include <binaryserializer.h>
 #include <jsonserializer.h>
 #include <stringserializer.h>
 

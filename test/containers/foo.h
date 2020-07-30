@@ -1,9 +1,9 @@
 #ifndef FOO_H
 #define FOO_H
 
-#include <QObject>
-#include <QSet>
-#include <QVariantList>
+#include <QtCore/QObject>
+#include <QtCore/QSet>
+#include <QtCore/QVariantList>
 
 class Foo : public QObject
 {

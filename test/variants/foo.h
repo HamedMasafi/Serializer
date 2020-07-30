@@ -1,19 +1,19 @@
 #ifndef FOO_H
 #define FOO_H
 
-#include <QColor>
-#include <QFont>
-#include <QLocale>
-#include <QObject>
-#include <QPoint>
-#include <QPointF>
-#include <QPolygon>
-#include <QRect>
-#include <QRectF>
-#include <QRegularExpression>
-#include <QTime>
-#include <QUrl>
-#include <QUuid>
+#include <QtCore/QLocale>
+#include <QtCore/QObject>
+#include <QtCore/QPoint>
+#include <QtCore/QPointF>
+#include <QtCore/QRect>
+#include <QtCore/QRectF>
+#include <QtCore/QRegularExpression>
+#include <QtCore/QTime>
+#include <QtCore/QUrl>
+#include <QtCore/QUuid>
+#include <QtGui/QPolygon>
+#include <QtGui/QColor>
+#include <QtGui/QFont>
 
 class Foo : public QObject
 {

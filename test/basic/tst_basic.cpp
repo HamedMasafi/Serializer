@@ -1,10 +1,10 @@
 #include <QtTest>
 
-#include <QPoint>
-#include <QDebug>
-#include <QVector>
-#include <QPolygon>
-#include <binaryserializer.h>
+#include <QtCore/QPoint>
+#include <QtCore/QDebug>
+#include <QtCore/QVector>
+#include <QtCore/QPolygon>
+#include "binaryserializer.h"
 
 #ifdef QT_GUI_LIB
 #include <QtGui/QFont>

@@ -1,6 +1,6 @@
 #include "foo.h"
 
-#include <QWidget>
+#include <QtWidgets/QWidget>
 
 Foo::Foo(QObject *parent) : QObject(parent)
 {

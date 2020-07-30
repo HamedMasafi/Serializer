@@ -1,7 +1,7 @@
 #ifndef SERIALIZER_H
 #define SERIALIZER_H
 
-#include <QVariant>
+#include <QtCore/QVariant>
 #include "serializer_global.h"
 
 class AbstractSerializer

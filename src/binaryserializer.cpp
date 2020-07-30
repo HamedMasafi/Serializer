@@ -1,9 +1,9 @@
 #include "binaryserializer.h"
 
-#include <QMetaType>
-#include <QDataStream>
-#include <QJsonDocument>
-#include <QDebug>
+#include <QtCore/QMetaType>
+#include <QtCore/QDataStream>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QDebug>
 
 QDataStream &operator<<(QDataStream &stream, const QJsonDocument &doc)
 {
@@ -54,5 +54,5 @@ QString BinarySerializer::toString(const QVariant &value) const
     QByteArray data;
     QDataStream ds(&data, QIODevice::WriteOnly);
     ds << copy;
-    return QString(data.toBase64());
+    return QString::fromUtf8(data.toBase64());
 }

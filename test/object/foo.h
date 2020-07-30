@@ -1,9 +1,9 @@
 #ifndef FOO_H
 #define FOO_H
 
-#include <QObject>
-#include <QString>
-#include <QVariantList>
+#include <QtCore/QObject>
+#include <QtCore/QString>
+#include <QtCore/QVariantList>
 
 class Boo;
 class Foo : public QObject

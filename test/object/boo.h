@@ -1,7 +1,7 @@
 #ifndef BOO_H
 #define BOO_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 class Boo : public QObject
 {

@@ -1,5 +1,5 @@
 
-#include <QDebug>
+#include <QtCore/QDebug>
 #include "sqlserializer.h"
 
 SqlSerializer::SqlSerializer() :StringSerializer ()
@@ -33,7 +33,7 @@ QString SqlSerializer::escapeString(const QString &str) const
 //    }
 //    return ret;
     QString ret(str);
-    return ret.replace("'", "''");
+    return ret.replace(QStringLiteral("'"), QStringLiteral("''"));
 }
 
 QString SqlSerializer::unescapeString(const QString &str) const
@@ -82,5 +82,5 @@ QString SqlSerializer::unescapeString(const QString &str) const
 
 //    return ret;
     QString ret(str);
-    return ret.replace("''", "'");
+    return ret.replace(QStringLiteral("''"), QStringLiteral("'"));
 }
