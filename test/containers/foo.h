@@ -37,7 +37,7 @@ public:
     QVariantMap variantMap() const;
     QVector<int> vectorInt() const;
 
-public slots:
+public Q_SLOTS:
     void setStringList(QStringList stringList);
     void setListInt(QList<int> listInt);
     void setVariantList(QVariantList variantList);
@@ -45,7 +45,7 @@ public slots:
     void setVariantMap(QVariantMap variantMap);
     void setVectorInt(QVector<int> vectorInt);
 
-signals:
+Q_SIGNALS:
     void stringListChanged(QStringList stringList);
     void listIntChanged(QList<int> listInt);
     void variantListChanged(QVariantList variantList);

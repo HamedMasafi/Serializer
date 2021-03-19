@@ -15,11 +15,11 @@ public:
 
 QString name() const;
 
-signals:
+Q_SIGNALS:
 
 void nameChanged(QString name);
 
-public slots:
+public Q_SLOTS:
 void setName(QString name);
 };
 

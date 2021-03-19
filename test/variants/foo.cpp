@@ -109,7 +109,7 @@ void Foo::setPoint(QPoint point)
         return;
 
     m_point = point;
-    emit pointChanged(m_point);
+    Q_EMIT pointChanged(m_point);
 }
 
 void Foo::setPointF(QPointF pointF)
@@ -118,7 +118,7 @@ void Foo::setPointF(QPointF pointF)
         return;
 
     m_pointF = pointF;
-    emit pointFChanged(m_pointF);
+    Q_EMIT pointFChanged(m_pointF);
 }
 
 void Foo::setRect(QRect rect)
@@ -127,7 +127,7 @@ void Foo::setRect(QRect rect)
         return;
 
     m_rect = rect;
-    emit rectChanged(m_rect);
+    Q_EMIT rectChanged(m_rect);
 }
 
 void Foo::setRectF(QRectF rectF)
@@ -136,7 +136,7 @@ void Foo::setRectF(QRectF rectF)
         return;
 
     m_rectF = rectF;
-    emit rectFChanged(m_rectF);
+    Q_EMIT rectFChanged(m_rectF);
 }
 
 void Foo::setTime(QTime time)
@@ -145,7 +145,7 @@ void Foo::setTime(QTime time)
         return;
 
     m_time = time;
-    emit timeChanged(m_time);
+    Q_EMIT timeChanged(m_time);
 }
 
 void Foo::setDate(QDate date)
@@ -154,7 +154,7 @@ void Foo::setDate(QDate date)
         return;
 
     m_date = date;
-    emit dateChanged(m_date);
+    Q_EMIT dateChanged(m_date);
 }
 
 void Foo::setDateTime(QDateTime dateTime)
@@ -163,7 +163,7 @@ void Foo::setDateTime(QDateTime dateTime)
         return;
 
     m_dateTime = dateTime;
-    emit dateTimeChanged(m_dateTime);
+    Q_EMIT dateTimeChanged(m_dateTime);
 }
 
 void Foo::setUrl(QUrl url)
@@ -172,7 +172,7 @@ void Foo::setUrl(QUrl url)
         return;
 
     m_url = url;
-    emit urlChanged(m_url);
+    Q_EMIT urlChanged(m_url);
 }
 
 void Foo::setLocale(QLocale locale)
@@ -181,7 +181,7 @@ void Foo::setLocale(QLocale locale)
         return;
 
     m_locale = locale;
-    emit localeChanged(m_locale);
+    Q_EMIT localeChanged(m_locale);
 }
 
 void Foo::setRegularExpression(QRegularExpression regularExpression)
@@ -190,7 +190,7 @@ void Foo::setRegularExpression(QRegularExpression regularExpression)
         return;
 
     m_regularExpression = regularExpression;
-    emit regularExpressionChanged(m_regularExpression);
+    Q_EMIT regularExpressionChanged(m_regularExpression);
 }
 
 void Foo::setUuid(QUuid uuid)
@@ -199,7 +199,7 @@ void Foo::setUuid(QUuid uuid)
         return;
 
     m_uuid = uuid;
-    emit uuidChanged(m_uuid);
+    Q_EMIT uuidChanged(m_uuid);
 }
 
 void Foo::setFont(QFont font)
@@ -208,7 +208,7 @@ void Foo::setFont(QFont font)
         return;
 
     m_font = font;
-    emit fontChanged(m_font);
+    Q_EMIT fontChanged(m_font);
 }
 
 void Foo::setColor(QColor color)
@@ -217,7 +217,7 @@ void Foo::setColor(QColor color)
         return;
 
     m_color = color;
-    emit colorChanged(m_color);
+    Q_EMIT colorChanged(m_color);
 }
 
 void Foo::setPolygon(QPolygon polygon)
@@ -226,7 +226,7 @@ void Foo::setPolygon(QPolygon polygon)
         return;
 
     m_polygon = polygon;
-    emit polygonChanged(m_polygon);
+    Q_EMIT polygonChanged(m_polygon);
 }
 
 void Foo::setPolygonF(QPolygonF polygonF)
@@ -235,5 +235,5 @@ void Foo::setPolygonF(QPolygonF polygonF)
         return;
 
     m_polygonF = polygonF;
-    emit polygonFChanged(m_polygonF);
+    Q_EMIT polygonFChanged(m_polygonF);
 }

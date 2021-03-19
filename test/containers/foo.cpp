@@ -54,7 +54,7 @@ void Foo::setStringList(QStringList stringList)
         return;
 
     m_stringList = stringList;
-    emit stringListChanged(m_stringList);
+    Q_EMIT stringListChanged(m_stringList);
 }
 
 void Foo::setListInt(QList<int> listInt)
@@ -63,7 +63,7 @@ void Foo::setListInt(QList<int> listInt)
         return;
 
     m_listInt = listInt;
-    emit listIntChanged(m_listInt);
+    Q_EMIT listIntChanged(m_listInt);
 }
 
 void Foo::setVariantList(QVariantList variantList)
@@ -72,7 +72,7 @@ void Foo::setVariantList(QVariantList variantList)
         return;
 
     m_variantList = variantList;
-    emit variantListChanged(m_variantList);
+    Q_EMIT variantListChanged(m_variantList);
 }
 
 void Foo::setSetInt(QSet<int> setInt)
@@ -81,7 +81,7 @@ void Foo::setSetInt(QSet<int> setInt)
         return;
 
     m_setInt = setInt;
-    emit setIntChanged(m_setInt);
+    Q_EMIT setIntChanged(m_setInt);
 }
 
 void Foo::setVariantMap(QVariantMap variantMap)
@@ -90,7 +90,7 @@ void Foo::setVariantMap(QVariantMap variantMap)
         return;
 
     m_variantMap = variantMap;
-    emit variantMapChanged(m_variantMap);
+    Q_EMIT variantMapChanged(m_variantMap);
 }
 
 void Foo::setVectorInt(QVector<int> vectorInt)
@@ -99,5 +99,5 @@ void Foo::setVectorInt(QVector<int> vectorInt)
         return;
 
     m_vectorInt = vectorInt;
-    emit vectorIntChanged(m_vectorInt);
+    Q_EMIT vectorIntChanged(m_vectorInt);
 }

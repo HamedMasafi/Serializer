@@ -20,7 +20,7 @@ public:
     object();
     ~object();
 
-private slots:
+private Q_SLOTS:
     void initTestCase();
     void test();
     void cleanupTestCase();

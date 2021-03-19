@@ -27,7 +27,7 @@ void Foo::setFoo(Foo *foo)
         return;
 
     m_foo = foo;
-    emit fooChanged(m_foo);
+    Q_EMIT fooChanged(m_foo);
 }
 
 void Foo::setFooList(QList<Boo*> fooList)
@@ -36,7 +36,7 @@ void Foo::setFooList(QList<Boo*> fooList)
         return;
 
     m_fooList = fooList;
-    emit fooListChanged(m_fooList);
+    Q_EMIT fooListChanged(m_fooList);
 }
 
 void Foo::setBooMap(Foo::BooMap booMap)
@@ -45,5 +45,5 @@ void Foo::setBooMap(Foo::BooMap booMap)
         return;
 
     m_booMap = booMap;
-    emit booMapChanged(m_booMap);
+    Q_EMIT booMapChanged(m_booMap);
 }

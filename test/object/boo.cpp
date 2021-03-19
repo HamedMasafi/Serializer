@@ -16,5 +16,5 @@ void Boo::setName(QString name)
         return;
 
     m_name = name;
-    emit nameChanged(m_name);
+    Q_EMIT nameChanged(m_name);
 }

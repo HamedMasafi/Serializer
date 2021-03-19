@@ -19,7 +19,7 @@ public:
     containers();
     ~containers();
 
-private slots:
+private Q_SLOTS:
     void initTestCase();
     void test();
     void cleanupTestCase();
@@ -52,7 +52,7 @@ void containers::test()
     auto o2 = s.serialize(ds);
     qDebug().noquote() << QJsonDocument(o2).toJson(QJsonDocument::Indented);
 
-    foreach (QString key, o1.keys()) {
+    Q_FOREACH (QString key, o1.keys()) {
         if (o1.value(key) != o2.value(key))
             qDebug() << "Values are not equals" <<
                 o1.value(key) << o2.value(key);

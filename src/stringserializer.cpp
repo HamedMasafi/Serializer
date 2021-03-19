@@ -174,7 +174,7 @@ QVariant StringSerializer::fromString(const QString &value, const QMetaType::Typ
     case QMetaType::QVariantMap: {
         QVariantMap ret;
         QStringList parts = value.split(QStringLiteral("\n"));
-        foreach (QString p, parts) {
+        Q_FOREACH (QString p, parts) {
             if (p.isEmpty())
                 continue;
             QString name;
@@ -188,7 +188,7 @@ QVariant StringSerializer::fromString(const QString &value, const QMetaType::Typ
     case QMetaType::QVariantList: {
         QVariantMap ret;
         QStringList parts = value.split(QStringLiteral("\n"));
-        foreach (QString p, parts) {
+        Q_FOREACH (QString p, parts) {
             if (p.isEmpty())
                 continue;
             QString name;
@@ -286,7 +286,7 @@ QString StringSerializer::toString(const QVariant &value) const
     case QMetaType::QStringList: {
         QString ret;
         QStringList sl = value.toStringList();
-        foreach (QString s, sl) {
+        Q_FOREACH (QString s, sl) {
             if (!ret.isEmpty())
                 ret.append(QStringLiteral(" "));
 
@@ -366,7 +366,7 @@ QString StringSerializer::toString(const QVariant &value) const
     case QMetaType::QVariantMap: {
         QString ret;
         QVariantMap map = value.toMap();
-        foreach (QString k, map.keys()) {
+        Q_FOREACH (QString k, map.keys()) {
             if (!ret.isEmpty())
                 ret.append(QStringLiteral("\n"));
             QVariant v = map.value(k);
@@ -434,7 +434,7 @@ QString StringSerializer::toString(const QVariant &value) const
         auto l = value.toList();
         QString ret;
 
-        foreach (QVariant v, l) {
+        Q_FOREACH (QVariant v, l) {
             if (!ret.isEmpty())
                 ret.append(QStringLiteral(", "));
             ret.append(toString(v));
@@ -460,7 +460,7 @@ QList<int> StringSerializer::toListInt(const QString &s, const QString &sep) con
 {
     auto parts = s.split(sep);
     QList<int> ret;
-    foreach (QString p, parts) {
+    Q_FOREACH (QString p, parts) {
         bool ok;
         ret.append(p.toInt(&ok));
         if (!ok)
@@ -478,7 +478,7 @@ QList<qreal> StringSerializer::toListReal(const QString &s) const
 QString StringSerializer::fromList(const QList<int> &list) const
 {
     QString ret;
-    foreach (int n, list) {
+    Q_FOREACH (int n, list) {
         if (!ret.isEmpty())
             ret.append(QStringLiteral(","));
         ret.append(QString::number(n));
@@ -490,7 +490,7 @@ QList<qreal> StringSerializer::toListReal(const QString &s, const QString &sep) 
 {
     auto parts = s.split(sep);
     QList<qreal> ret;
-    foreach (QString p, parts) {
+    Q_FOREACH (QString p, parts) {
         bool ok;
         ret.append(p.toDouble(&ok));
         if (!ok)
@@ -504,7 +504,7 @@ QList<float> StringSerializer::toListFloat(const QString &s) const
 {
     auto parts = s.split(QStringLiteral(","));
     QList<float> ret;
-    foreach (QString p, parts) {
+    Q_FOREACH (QString p, parts) {
         bool ok;
         ret.append(p.toFloat(&ok));
         if (!ok)
@@ -517,7 +517,7 @@ QList<float> StringSerializer::toListFloat(const QString &s) const
 QString StringSerializer::fromList(const QList<qreal> &list) const
 {
     QString ret;
-    foreach (qreal n, list) {
+    Q_FOREACH (qreal n, list) {
         if (!ret.isEmpty())
             ret.append(QStringLiteral(","));
         ret.append(QString::number(n));
@@ -528,7 +528,7 @@ QString StringSerializer::fromList(const QList<qreal> &list) const
 QString StringSerializer::fromList(const QList<float> &list) const
 {
     QString ret;
-    foreach (float n, list) {
+    Q_FOREACH (float n, list) {
         if (!ret.isEmpty())
             ret.append(QStringLiteral(","));
         ret.append(QString::number(static_cast<double>(n)));

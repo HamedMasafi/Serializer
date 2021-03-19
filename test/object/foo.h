@@ -29,12 +29,12 @@ public:
     QList<Boo*> fooList() const;
     BooMap booMap() const;
 
-signals:
+Q_SIGNALS:
     void fooChanged(Foo* foo);
     void fooListChanged(QList<Boo*> fooList);
     void booMapChanged(BooMap booMap);
 
-public slots:
+public Q_SLOTS:
     void setFoo(Foo* foo);
     void setFooList(QList<Boo *> fooList);
     void setBooMap(BooMap booMap);

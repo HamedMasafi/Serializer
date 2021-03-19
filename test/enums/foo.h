@@ -35,11 +35,11 @@ public:
     Sample sampleEnum() const;
     SampleFlags sampleFlag() const;
 
-public slots:
+public Q_SLOTS:
     void setSampleEnum(Sample sampleEnum);
     void setSampleFlag(SampleFlags sampleFlag);
 
-signals:
+Q_SIGNALS:
     void sampleEnumChanged(Sample sampleEnum);
     void sampleFlagChanged(SampleFlags sampleFlag);
 };

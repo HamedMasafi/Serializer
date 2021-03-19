@@ -330,14 +330,14 @@ QJsonValue JsonSerializer::toJson(QVariant v)
         case QVariant::Polygon: {
             QJsonArray arr;
             QPolygon poly = v.value<QPolygon>();
-            foreach (QPoint pt, poly)
+            Q_FOREACH (QPoint pt, poly)
                 arr.append(toJson(pt));
             return arr;
         }
         case QVariant::PolygonF: {
             QJsonArray arr;
             QPolygonF poly = v.value<QPolygonF>();
-            foreach (QPointF pt, poly)
+            Q_FOREACH (QPointF pt, poly)
                 arr.append(toJson(pt));
             return arr;
         }
@@ -356,7 +356,7 @@ QJsonValue JsonSerializer::toJson(QVariantList list)
         return QJsonArray();
 
     QJsonArray array;
-    foreach (QVariant v, list) {
+    Q_FOREACH (QVariant v, list) {
         array.append(toJson(v));
     }
 
@@ -369,7 +369,7 @@ QJsonValue JsonSerializer::toJson(QVariantList list)
 QJsonValue JsonSerializer::toJson(QStringList list)
 {
     QJsonArray array;
-    foreach (QVariant v, list) {
+    Q_FOREACH (QVariant v, list) {
         array.append(toJson(v));
     }
 
@@ -382,7 +382,7 @@ QJsonValue JsonSerializer::toJson(QStringList list)
 QJsonValue JsonSerializer::toJson(QVariantMap map)
 {
     QJsonObject mapObject;
-    foreach (QString key, map.keys()) {
+    Q_FOREACH (QString key, map.keys()) {
         mapObject.insert(key, toJson(map[key]));
     }
 
@@ -438,14 +438,14 @@ QVariant JsonSerializer::fromJson(const QMetaType::Type &type,
     case QMetaType::QPolygon: {
         QPolygon poly;
         auto arr = value.toArray();
-        foreach (QJsonValue val, arr)
+        Q_FOREACH (QJsonValue val, arr)
             poly << fromJson(QMetaType::QPoint, val).toPoint();
         return poly;
     }
     case QMetaType::QPolygonF: {
         QPolygonF poly;
         auto arr = value.toArray();
-        foreach (QJsonValue val, arr)
+        Q_FOREACH (QJsonValue val, arr)
             poly << fromJson(QMetaType::QPointF, val).toPointF();
         return poly;
     }
@@ -512,7 +512,7 @@ QVariant JsonSerializer::fromJson(const QMetaType::Type &type,
     //    if(type == QVariant::Map){
     QVariantMap map;
     //        QJsonObject mapObject = object[VARIANT_VALUE].toObject();
-    foreach (QString key, object.keys())
+    Q_FOREACH (QString key, object.keys())
         map.insert(key, fromJson(type, object[key]));
     return map;
     //    }
@@ -524,7 +524,7 @@ QVariant JsonSerializer::fromJson(const QMetaType::Type &type,
         QJsonObject mapObject
             = object[VARIANT_VALUE].toObject().value(VARIANT_VALUE).toObject();
 
-        foreach (QString key, mapObject.keys())
+        Q_FOREACH (QString key, mapObject.keys())
             map.insert(key, fromJson(type, mapObject[key].toObject()));
         int typeCode = QMetaType::type(typeName.toLatin1().data());
 
@@ -561,7 +561,7 @@ QVariant JsonSerializer::fromJson(const QMetaType::Type &type,
                                   const QJsonArray &array)
 {
     QVariantList list;
-    foreach (QJsonValue value, array)
+    Q_FOREACH (QJsonValue value, array)
         list.append(fromJson(type, value));
     return list;
 }
@@ -574,7 +574,7 @@ QVariantMap JsonSerializer::mapFromJson(const QMetaType::Type &keyType,
     //    QString typeName = QMetaType::typeName(type);// =
     //    object[VARIANT_TYPE].toString();
     QVariantMap map;
-    foreach (QString key, object.keys())
+    Q_FOREACH (QString key, object.keys())
         map.insert(key, fromJson(valueType, object[key]));
     return map;
 }

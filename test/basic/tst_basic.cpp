@@ -21,7 +21,7 @@ public:
     ~basic();
     void types(AbstractSerializer &ser);
 
-private slots:
+private Q_SLOTS:
     void initTestCase();
     void cleanupTestCase();
     void testString();

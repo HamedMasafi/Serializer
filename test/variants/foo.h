@@ -72,7 +72,7 @@ public:
     QPolygon polygon() const;
     QPolygonF polygonF() const;
 
-signals:
+Q_SIGNALS:
     void pointChanged(QPoint point);
     void pointFChanged(QPointF pointF);
     void rectChanged(QRect rect);
@@ -89,7 +89,7 @@ signals:
     void polygonChanged(QPolygon polygon);
     void polygonFChanged(QPolygonF polygonF);
 
-public slots:
+public Q_SLOTS:
     void setPoint(QPoint point);
     void setPointF(QPointF pointF);
     void setRect(QRect rect);

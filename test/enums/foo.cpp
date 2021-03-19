@@ -27,7 +27,7 @@ void Foo::setSampleEnum(Foo::Sample sampleEnum)
         return;
 
     m_sampleEnum = sampleEnum;
-    emit sampleEnumChanged(m_sampleEnum);
+    Q_EMIT sampleEnumChanged(m_sampleEnum);
 }
 
 void Foo::setSampleFlag(Foo::SampleFlags sampleFlag)
@@ -36,5 +36,5 @@ void Foo::setSampleFlag(Foo::SampleFlags sampleFlag)
         return;
 
     m_sampleFlag = sampleFlag;
-    emit sampleFlagChanged(m_sampleFlag);
+    Q_EMIT sampleFlagChanged(m_sampleFlag);
 }
