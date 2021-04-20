@@ -520,7 +520,7 @@ QString StringSerializer::fromList(const QList<qreal> &list) const
     Q_FOREACH (qreal n, list) {
         if (!ret.isEmpty())
             ret.append(QStringLiteral(","));
-        ret.append(QString::number(n));
+        ret.append(QString::number(n, 'f', -1));
     }
     return ret;
 }
