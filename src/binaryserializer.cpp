@@ -14,7 +14,7 @@ QDataStream &operator<<(QDataStream &stream, const QJsonDocument &doc)
 QDataStream &operator>>(QDataStream &stream, QJsonDocument &doc)
 {
     QByteArray buffer;
-    stream << buffer;
+    stream >> buffer;
     doc = QJsonDocument::fromJson(buffer);
     return stream;
 }
