@@ -3,11 +3,12 @@
 #include <QtCore/QPoint>
 #include <QtCore/QDebug>
 #include <QtCore/QVector>
-#include <QtCore/QPolygon>
 #include "binaryserializer.h"
+#include "stringserializer.h"
 
 #ifdef QT_GUI_LIB
 #include <QtGui/QFont>
+#include <QtGui/QPolygon>
 #endif
 
 #include <stringserializer.h>
@@ -27,6 +28,7 @@ private Q_SLOTS:
     void testString();
     void testBinary();
     void getString();
+    void doubleTest();
 };
 
 basic::basic()
@@ -157,6 +159,22 @@ void basic::getString()
     qDebug() << out;
     qDebug() << text;
     QVERIFY(out == "Hi this is \\\" sample");
+}
+
+void basic::doubleTest()
+{
+    StringSerializer s;
+    double d1 = 0.1 + .2;
+    double d2 = 1.0 / 7;
+    QPointF pt{d1, d2};
+    auto v = QVariant::fromValue(pt);
+    auto serializedd1 = s.toString(d1);
+    auto serializedd2 = s.toString(d2);
+    auto serializedPoint = s.toString(v);
+    qDebug() << serializedPoint;
+    QCOMPARE(serializedd1, QVariant::fromValue(d1).toString());
+    QCOMPARE(serializedd2, QVariant::fromValue(d2).toString());
+    QCOMPARE(serializedPoint, serializedd1 + QStringLiteral(",") + serializedd2);
 }
 
 QTEST_APPLESS_MAIN(basic)

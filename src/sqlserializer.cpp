@@ -8,8 +8,8 @@ SqlSerializer::SqlSerializer() :StringSerializer ()
 }
 
 #define CASE_W(o, r) \
-    case o:                  \
-        ret.append(r);     \
+    case o: \
+        ret.append(r); \
         break;
 QString SqlSerializer::escapeString(const QString &str) const
 {

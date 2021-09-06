@@ -21,6 +21,7 @@ public:
     QString fromList(const QList<int> &list) const;
     QString fromList(const QList<qreal> &list) const;
     QString fromList(const QList<float> &list) const;
+    QString fromVariantList(const QVariantList &list) const;
 
 private:
     virtual QString escapeString(const QString &str) const override;
