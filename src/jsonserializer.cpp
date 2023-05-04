@@ -13,6 +13,7 @@
 #include <QtGui/QFont>
 #include <QtGui/QPolygon>
 #include <QtGui/QPolygonF>
+#include <QIODevice>
 
 #define VARIANT_TYPE QStringLiteral("_type")
 #define VARIANT_VALUE QStringLiteral("_value")

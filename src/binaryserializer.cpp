@@ -4,6 +4,7 @@
 #include <QtCore/QDataStream>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QDebug>
+#include <QIODevice>
 
 QDataStream &operator<<(QDataStream &stream, const QJsonDocument &doc)
 {
@@ -29,7 +30,7 @@ QVariant BinarySerializer::fromString(const QString &value, const QMetaType::Typ
     QVariant copy;
     QVariant v;
     QByteArray data = QByteArray::fromBase64(value.toLocal8Bit());
-    QDataStream ds(&data,QIODevice::ReadOnly);
+    QDataStream ds(&data, QIODevice::ReadOnly);
     ds >> v;
 
     if (type == QMetaType::QJsonDocument)
