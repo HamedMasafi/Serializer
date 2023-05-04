@@ -9,6 +9,9 @@ target_include_directories(basic PRIVATE
     ../../src
 )
 
+
+add_test(NAME basic COMMAND basic)
+
 target_link_libraries(basic PRIVATE
     Qt::Core
     Qt::Gui

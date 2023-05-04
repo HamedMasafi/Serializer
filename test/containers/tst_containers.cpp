@@ -55,12 +55,13 @@ void containers::test()
     auto o2 = s.serialize(ds);
     qDebug().noquote() << QJsonDocument(o2).toJson(QJsonDocument::Indented);
 
-    Q_FOREACH (QString key, o1.keys()) {
+    for (auto &key : o1.keys()) {
         if (o1.value(key) != o2.value(key))
             qDebug() << "Values are not equals" <<
                 o1.value(key) << o2.value(key);
-
     }
+    qDebug() << o1;
+    qDebug() << o2;
     QTEST_ASSERT(o1 == o2);
 }
 

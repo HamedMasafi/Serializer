@@ -42,3 +42,10 @@ install(TARGETS Serializer
     FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+target_include_directories(Serializer PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+target_include_directories(SerializerStatic PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
