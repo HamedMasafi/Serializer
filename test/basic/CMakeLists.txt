@@ -3,6 +3,7 @@ qt_add_executable(basic
     ../../src/binaryserializer.cpp ../../src/binaryserializer.h
     ../../src/serializer_global.h
     ../../src/stringserializer.cpp ../../src/stringserializer.h
+    ../../src/xmlserializer.cpp ../../src/xmlserializer.h
     tst_basic.cpp
 )
 target_include_directories(basic PRIVATE
@@ -17,6 +18,7 @@ target_link_libraries(basic PRIVATE
     Qt::Gui
     Qt::Test
     Qt::Widgets
+    Qt::Xml
 )
 
 

@@ -4,6 +4,7 @@ set(Serializer_Source
     jsonserializer.cpp jsonserializer.h
     serializer_global.h
     stringserializer.cpp stringserializer.h
+    xmlserializer.h xmlserializer.cpp
 )
 
 qt_add_library(
@@ -30,11 +31,13 @@ target_compile_definitions(SerializerStatic PUBLIC
 target_link_libraries(Serializer PUBLIC
     Qt::Core
     Qt::Gui
+    Qt::Xml
 )
 
 target_link_libraries(SerializerStatic PUBLIC
     Qt::Core
     Qt::Gui
+    Qt::Xml
 )
 
 install(TARGETS Serializer

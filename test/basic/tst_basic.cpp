@@ -5,6 +5,7 @@
 #include <QtCore/QVector>
 #include "binaryserializer.h"
 #include "stringserializer.h"
+#include "xmlserializer.h"
 
 #ifdef QT_GUI_LIB
 #include <QtGui/QFont>
@@ -29,6 +30,8 @@ private Q_SLOTS:
     void testBinary();
     void getString();
     void doubleTest();
+
+    void xml();
 };
 
 basic::basic()
@@ -175,6 +178,16 @@ void basic::doubleTest()
     QCOMPARE(serializedd1, QVariant::fromValue(d1).toString());
     QCOMPARE(serializedd2, QVariant::fromValue(d2).toString());
     QCOMPARE(serializedPoint, serializedd1 + QStringLiteral(",") + serializedd2);
+}
+
+void basic::xml()
+{
+    XmlSerializer ser;
+    int n {1234};
+    auto t = ser.toDomElement(n);
+    QDomDocument doc;
+    doc.appendChild(t);
+    qDebug() << doc.toString();
 }
 
 QTEST_APPLESS_MAIN(basic)

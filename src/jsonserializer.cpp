@@ -293,18 +293,18 @@ QJsonValue JsonSerializer::toJson(QVariant v)
             return toJson(map);
         }
 
-        switch (v.type()) {
-        case QVariant::Point: {
+        switch (v.typeId()) {
+        case QMetaType::QPoint: {
             auto pt = v.toPoint();
             return QJsonObject{{ QStringLiteral("x"), pt.x()}, { QStringLiteral("y"), pt.y()}};
             break;
         }
-        case QVariant::PointF: {
+        case QMetaType::QPointF: {
             auto pt = v.toPointF();
             return QJsonObject{{ QStringLiteral("x"), pt.x()}, { QStringLiteral("y"), pt.y()}};
             break;
         }
-        case QVariant::Rect: {
+        case QMetaType::QRect: {
             auto rc = v.toRect();
             return QJsonObject{{ QStringLiteral("x"), rc.x()},
                                { QStringLiteral("y"), rc.y()},
@@ -312,7 +312,7 @@ QJsonValue JsonSerializer::toJson(QVariant v)
                                { QStringLiteral("height"), rc.height()}};
             break;
         }
-        case QVariant::RectF: {
+        case QMetaType::QRectF: {
             auto rc = v.toRectF();
             return QJsonObject{{ QStringLiteral("x"), rc.x()},
                                { QStringLiteral("y"), rc.y()},
@@ -320,22 +320,22 @@ QJsonValue JsonSerializer::toJson(QVariant v)
                                { QStringLiteral("height"), rc.height()}};
             break;
         }
-        case QVariant::Locale: {
+        case QMetaType::QLocale: {
             auto lc = v.toLocale();
             return lc.name();
         }
-        case QVariant::RegularExpression:
+        case QMetaType::QRegularExpression:
             return v.toRegularExpression().pattern();
 
-        case QVariant::Font: return v.value<QFont>().toString();
-        case QVariant::Polygon: {
+        case QMetaType::QFont: return v.value<QFont>().toString();
+        case QMetaType::QPolygon: {
             QJsonArray arr;
             QPolygon poly = v.value<QPolygon>();
             Q_FOREACH (QPoint pt, poly)
                 arr.append(toJson(pt));
             return arr;
         }
-        case QVariant::PolygonF: {
+        case QMetaType::QPolygonF: {
             QJsonArray arr;
             QPolygonF poly = v.value<QPolygonF>();
             Q_FOREACH (QPointF pt, poly)
@@ -469,8 +469,8 @@ QVariant JsonSerializer::fromJson(const QMetaType::Type &type,
 
     if (value.isObject()) {
         if (typeName.endsWith(QStringLiteral("*"))) {
-            const QMetaObject *metaObject = QMetaType::metaObjectForType(type);
-            auto obj                      = metaObject->newInstance();
+            const QMetaObject *metaObject = QMetaType::metaObjectForType((int)type);
+            auto obj = metaObject->newInstance();
             deserialize(value.toObject(), obj);
             return QVariant::fromValue(obj);
         }
@@ -531,7 +531,7 @@ QVariant JsonSerializer::fromJson(const QMetaType::Type &type,
 
         if (typeCode == QMetaType::UnknownType) {
             qWarning("Type %s is not registered!", qPrintable(typeName));
-            return QVariant(QVariant::Invalid);
+            return QVariant{};
         }
 
         const QMetaObject *metaObject = QMetaType::metaObjectForType(typeCode);

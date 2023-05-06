@@ -20,4 +20,12 @@ private:
     virtual QString toString(const QVariant &value) const = 0;
 };
 
+
+class AbstractSerializer2
+{
+protected:
+    void begin(const QString &data);
+    QVariant read(QMetaType::Type type);
+};
+
 #endif // SERIALIZER_H
