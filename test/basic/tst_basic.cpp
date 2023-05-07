@@ -183,11 +183,16 @@ void basic::doubleTest()
 void basic::xml()
 {
     XmlSerializer ser;
+
     int n {1234};
-    auto t = ser.toDomElement(n);
-    QDomDocument doc;
-    doc.appendChild(t);
-    qDebug() << doc.toString();
+    qDebug() << ser.serialize(n);
+
+
+    QVariantList list;
+    for (int i = 0; i < 3; ++i) {
+        list << i;
+    }
+    qDebug() << ser.serialize(list);
 }
 
 QTEST_APPLESS_MAIN(basic)

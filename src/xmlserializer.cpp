@@ -11,6 +11,7 @@
 #include <QDomDocument>
 #include <QDomElement>
 #include <QRegularExpression>
+#include <QUrl>
 
 #define createSimpleElement(name, value) QDomElement name; name.setNodeValue(value);
 #define createSimpleElementInteger(name, value) QDomElement name; name.setNodeValue(QString::number(value));
@@ -20,16 +21,36 @@ XmlSerializer::XmlSerializer()
 
 }
 
-QDomElement XmlSerializer::toDomElement(const QVariant &v)
+QDomElement XmlSerializer::toDomElement(QDomDocument &doc, const QString &name, const QVariant &v) const
 {
     DomWriter w;
 
-    QDomElement element;
+    QDomElement element = doc.createElement(name);
+    element.setAttribute("type", v.typeName());
+
     switch (v.typeId()) {
-    case QMetaType::Int: {
-        auto tmp = v.toInt();
-        w.append("int", tmp);
-    }
+    case QMetaType::Int:
+    case QMetaType::Short:
+    case QMetaType::Long:
+    case QMetaType::LongLong:
+        element.appendChild(doc.createTextNode(QString::number(v.toLongLong())));
+        return element;
+
+    case QMetaType::UInt:
+    case QMetaType::UShort:
+    case QMetaType::ULong:
+    case QMetaType::ULongLong:
+        element.appendChild(doc.createTextNode(QString::number(v.toLongLong())));
+        return element;
+
+    case QMetaType::Bool:
+        element.appendChild(doc.createTextNode(v.toBool() ? "true" : "false"));
+        return element;
+
+    case QMetaType::Char:
+        element.appendChild(doc.createTextNode(v.toChar()));
+        return element;
+
     case QMetaType::QPoint: {
         auto pt = v.toPoint();
         w.append("x", pt.x());
@@ -70,25 +91,42 @@ QDomElement XmlSerializer::toDomElement(const QVariant &v)
     case QMetaType::QFont:
         element.setNodeValue(v.value<QFont>().toString());
         return element;
-        //    case QMetaType::QPolygon: {
-        //        QJsonArray arr;
-        //        QPolygon poly = v.value<QPolygon>();
-        //        Q_FOREACH (QPoint pt, poly)
-        //            arr.append(toJson(pt));
-        //        return arr;
-        //    }
-        //    case QMetaType::QPolygonF: {
-        //        QJsonArray arr;
-        //        QPolygonF poly = v.value<QPolygonF>();
-        //        Q_FOREACH (QPointF pt, poly)
-        //            arr.append(toJson(pt));
-        //        return arr;
-        //    }
+
+    case QMetaType::QUrl:
+        element.setNodeValue(v.value<QUrl>().toString());
+        return element;
+
+    case QMetaType::QPolygon: {
+        auto poly = v.value<QPolygon>();
+        for (auto &pt : poly) {
+            auto child = toDomElement(doc, "value", pt);
+            element.appendChild(child);
+        }
+        return w.el();
+    }
+    case QMetaType::QPolygonF: {
+        auto poly = v.value<QPolygonF>();
+        for (auto &pt : poly) {
+            auto child = toDomElement(doc, "value", pt);
+            element.appendChild(child);
+        }
+        return w.el();
+    }
 
     default:
         break;
     }
+    return element;
+}
 
+QDomElement XmlSerializer::toDomElement(QDomDocument &doc, const QString &name, QVariantList list) const
+{
+    QDomElement element = doc.createElement(name);
+    element.setAttribute("type", "QVariantList");
+    for (auto &v:list) {
+        element.appendChild(toDomElement(doc, "item", v));
+    }
+    return element;
 }
 
 QVariant XmlSerializer::fromString(const QString &value, const QMetaType::Type &type) const
@@ -109,7 +147,22 @@ QVariant XmlSerializer::fromString(const QString &value, const QMetaType::Type &
 
 QString XmlSerializer::toString(const QVariant &value) const
 {
-    return QString{};
+    QDomDocument doc;
+    QDomElement el;
+
+    if (value.typeId() == QMetaType::QVariantList)
+        el = toDomElement(doc, "value", value.toList());
+    else
+        el = toDomElement(doc, "value", value);
+    doc.appendChild(el);
+    return doc.toString();
+}
+
+void XmlSerializer::addToElement(QDomElement &element, int n)
+{
+    QDomElement ch;
+    ch.setNodeValue(QString::number(n));
+    element.appendChild(ch);
 }
 /*
 QVariant fromString2(const QString &value, const QMetaType::Type &type)

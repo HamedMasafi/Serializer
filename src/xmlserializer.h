@@ -9,8 +9,8 @@ public:
     XmlSerializer();
 
 //    QDomElement toDomElement(const QMetaEnum &en, const QVariant &value);
-    QDomElement toDomElement(const QVariant &v);
-//    QDomElement toDomElement(QVariantList list);
+    QDomElement toDomElement(QDomDocument &doc, const QString &name, const QVariant &v) const;
+    QDomElement toDomElement(QDomDocument &doc, const QString &name, QVariantList list) const;
 //    QDomElement toDomElement(QStringList list);
 //    QDomElement toDomElement(QVariantMap map);
 
@@ -29,5 +29,8 @@ private:
 
     QVariant fromString(const QString &value, const QMetaType::Type &type) const;
     QString toString(const QVariant &value) const;
+
+    void addToElement(QDomElement &element, int n);
+//    void addToElement(QDomElement &element, cnst QDomElement &child);
 };
 
