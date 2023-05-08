@@ -12,6 +12,7 @@
 #include <QDomElement>
 #include <QRegularExpression>
 #include <QUrl>
+#include <QMetaProperty>
 
 #define createSimpleElement(name, value) QDomElement name; name.setNodeValue(value);
 #define createSimpleElementInteger(name, value) QDomElement name; name.setNodeValue(QString::number(value));
@@ -23,9 +24,9 @@ XmlSerializer::XmlSerializer()
 
 QDomElement XmlSerializer::toDomElement(QDomDocument &doc, const QString &name, const QVariant &v) const
 {
-    DomWriter w;
 
     QDomElement element = doc.createElement(name);
+
     element.setAttribute("type", v.typeName());
 
     switch (v.typeId()) {
@@ -51,33 +52,37 @@ QDomElement XmlSerializer::toDomElement(QDomDocument &doc, const QString &name, 
         element.appendChild(doc.createTextNode(v.toChar()));
         return element;
 
+    case QMetaType::QString:
+        element.appendChild(doc.createTextNode(v.toString()));
+        return element;
+
     case QMetaType::QPoint: {
         auto pt = v.toPoint();
-        w.append("x", pt.x());
-        w.append("y", pt.y());
-        return w.el();
+        addToElement(doc, element, "x", pt.x());
+        addToElement(doc, element, "y", pt.y());
+        return element;
     }
     case QMetaType::QPointF: {
         auto pt = v.toPointF();
-        w.append("x", pt.x());
-        w.append("y", pt.y());
-        return w.el();
+        addToElement(doc, element, "x", pt.x());
+        addToElement(doc, element, "y", pt.y());
+        return element;
     }
     case QMetaType::QRect: {
         auto rc = v.toRect();
-        w.append("x", rc.x());
-        w.append("y", rc.y());
-        w.append("width", rc.width());
-        w.append("height", rc.height());
-        return w.el();
+        addToElement(doc, element, "x", rc.x());
+        addToElement(doc, element, "y", rc.y());
+        addToElement(doc, element, "width", rc.width());
+        addToElement(doc, element, "height", rc.height());
+        return element;
     }
     case QMetaType::QRectF: {
         auto rc = v.toRectF();
-        w.append("x", rc.x());
-        w.append("y", rc.y());
-        w.append("width", rc.width());
-        w.append("height", rc.height());
-        return w.el();
+        addToElement(doc, element, "x", rc.x());
+        addToElement(doc, element, "y", rc.y());
+        addToElement(doc, element, "width", rc.width());
+        addToElement(doc, element, "height", rc.height());
+        return element;
     }
     case QMetaType::QLocale: {
         auto lc = v.toLocale();
@@ -102,7 +107,7 @@ QDomElement XmlSerializer::toDomElement(QDomDocument &doc, const QString &name, 
             auto child = toDomElement(doc, "value", pt);
             element.appendChild(child);
         }
-        return w.el();
+        return element;
     }
     case QMetaType::QPolygonF: {
         auto poly = v.value<QPolygonF>();
@@ -110,7 +115,7 @@ QDomElement XmlSerializer::toDomElement(QDomDocument &doc, const QString &name, 
             auto child = toDomElement(doc, "value", pt);
             element.appendChild(child);
         }
-        return w.el();
+        return element;
     }
 
     default:
@@ -129,11 +134,130 @@ QDomElement XmlSerializer::toDomElement(QDomDocument &doc, const QString &name, 
     return element;
 }
 
+QVariant XmlSerializer::fromDomElement(const QMetaType::Type &type, const QDomElement &element) const
+{
+    switch (type) {
+    case QMetaType::Short:
+        return elementText(element).toShort();
+
+    case QMetaType::UShort:
+        return elementText(element).toUShort();
+
+    case QMetaType::Int:
+        return elementText(element).toInt();
+
+    case QMetaType::UInt:
+        return elementText(element).toUInt();
+
+    case QMetaType::Long:
+        return QVariant::fromValue(elementText(element).toLong());
+
+    case QMetaType::ULong:
+        return QVariant::fromValue(elementText(element).toULong());
+
+    case QMetaType::LongLong:
+        return elementText(element).toLongLong();
+
+    case QMetaType::ULongLong:
+        return elementText(element).toULongLong();
+
+    case QMetaType::QString:
+        return elementText(element);
+
+    case QMetaType::QPoint: {
+        QPoint pt;
+        pt.setX(elementChildText(element, "x").toInt());
+        pt.setY(elementChildText(element, "y").toInt());
+        return pt;
+    }
+    case QMetaType::QPointF: {
+        QPointF pt;
+        pt.setX(elementChildText(element, "x").toDouble());
+        pt.setY(elementChildText(element, "y").toDouble());
+        return pt;
+    }
+    case QMetaType::QRect: {
+        QRect rc;
+        rc.setX(elementChildText(element, "x").toInt());
+        rc.setY(elementChildText(element, "y").toInt());
+        rc.setWidth(elementChildText(element, "width").toInt());
+        rc.setHeight(elementChildText(element, "height").toInt());
+        return rc;
+    }
+    case QMetaType::QRectF: {
+        QRectF rc;
+        rc.setX(elementChildText(element, "x").toDouble());
+        rc.setY(elementChildText(element, "y").toDouble());
+        rc.setWidth(elementChildText(element, "width").toDouble());
+        rc.setHeight(elementChildText(element, "height").toDouble());
+        return rc;
+    }
+    case QMetaType::QPolygon:{
+        QPolygon poly;
+        for (int i = 0; i < element.childNodes().count(); ++i)
+            poly << fromDomElement(QMetaType::QPoint, element.childNodes().at(i).toElement()).toPoint();
+        return poly;
+    }
+    case QMetaType::QPolygonF:{
+        QPolygonF poly;
+        for (int i = 0; i < element.childNodes().count(); ++i)
+            poly << fromDomElement(QMetaType::QPointF, element.childNodes().at(i).toElement()).toPoint();
+        return poly;
+    }
+    default:
+        break;
+    }
+
+    return QVariant{};
+}
+
+QString XmlSerializer::serializeObject(QObject *object)
+{
+    if (!object)
+        return QString{};
+
+    QDomDocument doc;
+    auto rootElement = doc.createElement(object->metaObject()->className());
+
+    for (int i = 0; i < object->metaObject()->propertyCount(); i++) {
+        QMetaProperty property = object->metaObject()->property(i);
+        if (property.isReadable() && property.isWritable()) {
+            auto value = property.read(object);
+
+            rootElement.appendChild(toDomElement(doc, QString::fromUtf8(property.name()), value));
+        }
+    }
+
+    doc.appendChild(rootElement);
+    return doc.toString();
+}
+
+void XmlSerializer::deserializeQObject(QObject *obj, const QString &content)
+{
+    QDomDocument doc;
+    doc.setContent(content);
+    auto rootElement = doc.documentElement();
+
+    for (int i = 0; i < obj->metaObject()->propertyCount(); i++) {
+        QMetaProperty property = obj->metaObject()->property(i);
+        if (property.isReadable() && property.isWritable()) {
+            auto propertyName = QString::fromUtf8(property.name());
+            auto nodes = rootElement.elementsByTagName(propertyName);
+            if (!nodes.size())
+                continue;
+
+            auto element = nodes.at(0).toElement();
+            auto v = fromDomElement((QMetaType::Type)property.typeId(), element);
+            property.write(obj, v);
+        }
+    }
+}
+
 QVariant XmlSerializer::fromString(const QString &value, const QMetaType::Type &type) const
 {
     QDomDocument doc;
     doc.setContent(value);
-    return QVariant{};
+    return fromDomElement(type, doc.documentElement());
 
 
     //        reader{value};
@@ -158,11 +282,32 @@ QString XmlSerializer::toString(const QVariant &value) const
     return doc.toString();
 }
 
-void XmlSerializer::addToElement(QDomElement &element, int n)
+void XmlSerializer::addToElement(QDomDocument &doc, QDomElement &element, const QString &name, int n) const
 {
-    QDomElement ch;
-    ch.setNodeValue(QString::number(n));
-    element.appendChild(ch);
+    auto child = doc.createElement(name);
+    child.appendChild(doc.createTextNode(QString::number(n)));
+    element.appendChild(child);
+}
+
+QString XmlSerializer::elementText(const QDomElement &element) const
+{
+    if (element.childNodes().size() != 1)
+        return QString{};
+
+    auto node = element.childNodes().at(0);
+    if (node.nodeType() != QDomNode::TextNode)
+        return QString{};
+
+    return node.toText().data();
+}
+
+QString XmlSerializer::elementChildText(const QDomElement &element, const QString &name) const
+{
+    auto el = element.firstChildElement(name);
+    if (el == QDomElement{})
+        return QString{};
+
+    return elementText(el);
 }
 /*
 QVariant fromString2(const QString &value, const QMetaType::Type &type)
@@ -384,6 +529,12 @@ QVariant fromString2(const QString &value, const QMetaType::Type &type)
     }
 }
 */
+
+XmlSerializer::DomWriter::DomWriter(const QDomElement &element)
+    : _el{element}
+{
+
+}
 
 void XmlSerializer::DomWriter::append(const QString &name, int value)
 {
