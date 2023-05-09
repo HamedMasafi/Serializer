@@ -232,11 +232,14 @@ QString XmlSerializer::serializeObject(QObject *object)
     return doc.toString();
 }
 
-void XmlSerializer::deserializeQObject(QObject *obj, const QString &content)
+bool XmlSerializer::deserializeQObject(QObject *obj, const QString &content)
 {
     QDomDocument doc;
     doc.setContent(content);
     auto rootElement = doc.documentElement();
+
+    if (rootElement.isNull())
+        return false;
 
     for (int i = 0; i < obj->metaObject()->propertyCount(); i++) {
         QMetaProperty property = obj->metaObject()->property(i);
@@ -251,6 +254,7 @@ void XmlSerializer::deserializeQObject(QObject *obj, const QString &content)
             property.write(obj, v);
         }
     }
+    return true;
 }
 
 QVariant XmlSerializer::fromString(const QString &value, const QMetaType::Type &type) const

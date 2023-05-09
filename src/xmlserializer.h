@@ -15,7 +15,7 @@ public:
 //    QDomElement toDomElement(QVariantMap map);
     QVariant fromDomElement(const QMetaType::Type &type, const QDomElement &element) const;
     QString serializeObject(QObject *object);
-    void deserializeQObject(QObject *obj, const QString &content);
+    bool deserializeQObject(QObject *obj, const QString &content);
 
 private:
 
