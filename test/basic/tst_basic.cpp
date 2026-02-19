@@ -66,6 +66,7 @@ void basic::testBinary()
     types(b);
 }
 
+
 #ifdef ENABLE_TEST_MACROS
 #define TEST(type, value) \
     do{ \

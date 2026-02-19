@@ -19,133 +19,6 @@
 #define VARIANT_VALUE QStringLiteral("_value")
 #define CLASS_NAME(x) QString::fromUtf8(#x)
 
-template <typename T> bool registerQList()
-{
-    bool b1 = QMetaType::registerConverter<QList<T>, QVariantList>(
-        [](const QList<T> &list) -> QVariantList {
-            QVariantList l;
-            l.reserve(list.size());
-            for (const auto &v : list)
-                l.append(QVariant::fromValue(v));
-            return l;
-        });
-    bool b2 = QMetaType::registerConverter<QVariantList, QList<T>>(
-        [](const QVariantList &list) -> QList<T> {
-            QList<T> l;
-            l.reserve(list.size());
-            for (auto v : list) { // clazy:exclude=range-loop
-                const auto vt = v.type();
-                if (v.convert(qMetaTypeId<T>())) {
-                    l.append(v.value<T>());
-                    ;
-                } else {
-                    qWarning() << "Conversion to"
-                               << QMetaType::typeName(qMetaTypeId<QList<T>>())
-                               << "failed, could not convert element of type"
-                               << QMetaType::typeName(vt);
-                    //                    (l.*appendMethod)(TClass());
-                }
-            }
-            return l;
-        });
-    return b1 && b2;
-}
-template <typename T> bool registerQSet()
-{
-    bool b1 = QMetaType::registerConverter<QSet<T>, QVariantList>(
-        [](const QSet<T> &list) -> QVariantList {
-            QVariantList l;
-            l.reserve(list.size());
-            for (const auto &v : list)
-                l.append(QVariant::fromValue(v));
-            return l;
-        });
-    bool b2 = QMetaType::registerConverter<QVariantList, QSet<T>>(
-        [](const QVariantList &list) -> QSet<T> {
-            QSet<T> l;
-            l.reserve(list.size());
-            for (auto v : list) { // clazy:exclude=range-loop
-                const auto vt = v.type();
-                if (v.convert(qMetaTypeId<T>())) {
-                    l.insert(v.value<T>());
-                } else {
-                    qWarning() << "Conversion to"
-                               << QMetaType::typeName(qMetaTypeId<QSet<T>>())
-                               << "failed, could not convert element of type"
-                               << QMetaType::typeName(vt);
-                    //                    (l.*appendMethod)(TClass());
-                }
-            }
-            return l;
-        });
-    return b1 && b2;
-}
-template <typename T> bool registerQVector()
-{
-    bool b1 = QMetaType::registerConverter<QVector<T>, QVariantList>(
-        [](const QVector<T> &list) -> QVariantList {
-            QVariantList l;
-            l.reserve(list.size());
-            for (const auto &v : list)
-                l.append(QVariant::fromValue(v));
-            return l;
-        });
-    bool b2 = QMetaType::registerConverter<QVariantList, QVector<T>>(
-        [](const QVariantList &list) -> QVector<T> {
-            QVector<T> l;
-            l.reserve(list.size());
-            for (auto v : list) { // clazy:exclude=range-loop
-                const auto vt = v.type();
-                if (v.convert(qMetaTypeId<T>())) {
-                    l.append(v.value<T>());
-                } else {
-                    qWarning() << "Conversion to"
-                               << QMetaType::typeName(qMetaTypeId<QVector<T>>())
-                               << "failed, could not convert element of type"
-                               << QMetaType::typeName(vt);
-                    //                    (l.*appendMethod)(TClass());
-                }
-            }
-            return l;
-        });
-    return b1 && b2;
-}
-template <typename K, typename V> bool registerQMap()
-{
-    auto b1 = QMetaType::registerConverter<QMap<K, V>, QVariantMap>(
-        [](const QMap<K, V> &map) -> QVariantMap {
-            QVariantMap m;
-            for (auto it = map.constBegin(); it != map.constEnd(); ++it) {
-                //                if (asMultiMap)
-                //                    m.insertMulti(it.key(),
-                //                    QVariant::fromValue(it.value()));
-                //                else
-                m.insert(QVariant::fromValue(it.key()).toString(),
-                         QVariant::fromValue(it.value()));
-            }
-            return m;
-        });
-    auto b2 = QMetaType::registerConverter<QVariantMap, QMap<K, V>>(
-        [](const QVariantMap &map) -> QMap<K, V> {
-            QMap<K, V> m;
-            for (auto it = map.constBegin(); it != map.constEnd(); ++it) {
-                auto v        = it.value();
-                const auto vt = v.type();
-                if (v.convert(qMetaTypeId<V>()))
-                    m.insert(v.value<K>(), v.value<V>());
-                else {
-                    qWarning()
-                        << "Conversion to"
-                        << QMetaType::typeName(qMetaTypeId<QMap<K, V>>())
-                        << "failed, could not convert element value of type"
-                        << QMetaType::typeName(vt);
-                    //                    (m.*insertMethod)(it.key(), TClass());
-                }
-            }
-            return m;
-        });
-    return b1 && b2;
-}
 #define REGISTER(type)                             \
     qDebug() << "Registering" << #type;            \
     qDebug() << "  list" << registerQList<type>(); \
@@ -186,6 +59,7 @@ QJsonObject JsonSerializer::serialize(QObject *obj)
         if (val == QJsonValue())
             qDebug() << prop.name();
         json.insert(pps, val);
+        qDebug() << obj << pps << val;
     } // for
     return json;
 }
@@ -283,18 +157,12 @@ QJsonValue JsonSerializer::toJson(QVariant v)
         auto r = serialize(obj);
         return r;
     } else {
-        if (v.canConvert(QMetaType::QVariantList)) {
-            v.convert(qMetaTypeId<QVariantList>());
-            QVariantList list = v.value<QVariantList>();
-            return toJson(list);
-        }
-        if (v.canConvert(QMetaType::QVariantMap)) {
-            QVariantMap map = v.value<QVariantMap>();
-            return toJson(map);
-        }
 
-        switch (v.typeId()) {
-        case QMetaType::QPoint: {
+
+        switch (v.type()) {
+        case QMetaType::QString:
+            return QJsonValue{v.toString()};
+        case QVariant::Point: {
             auto pt = v.toPoint();
             return QJsonObject{{ QStringLiteral("x"), pt.x()}, { QStringLiteral("y"), pt.y()}};
             break;
@@ -324,14 +192,14 @@ QJsonValue JsonSerializer::toJson(QVariant v)
             auto lc = v.toLocale();
             return lc.name();
         }
-        case QMetaType::QRegularExpression:
-            return v.toRegularExpression().pattern();
+        case QVariant::RegularExpression:
+            return QJsonValue{v.toRegularExpression().pattern()};
 
         case QMetaType::QFont: return v.value<QFont>().toString();
         case QMetaType::QPolygon: {
             QJsonArray arr;
             QPolygon poly = v.value<QPolygon>();
-            Q_FOREACH (QPoint pt, poly)
+            for (auto &pt : poly)
                 arr.append(toJson(pt));
             return arr;
         }
@@ -344,6 +212,16 @@ QJsonValue JsonSerializer::toJson(QVariant v)
         }
 
         default: break;
+        }
+
+        if (v.canConvert(QMetaType::QVariantList)) {
+            v.convert(qMetaTypeId<QVariantList>());
+            QVariantList list = v.value<QVariantList>();
+            return toJson(list);
+        }
+        if (v.canConvert(QMetaType::QVariantMap)) {
+            QVariantMap map = v.value<QVariantMap>();
+            return toJson(map);
         }
 
         return QJsonValue::fromVariant(v);
@@ -402,6 +280,8 @@ QVariant JsonSerializer::fromJson(const QMetaType::Type &type,
     QString typeName = QString::fromUtf8(QMetaType::typeName(type));
 
     switch (type) {
+    case QMetaType::QString:
+        return value.toString();
     case QMetaType::QPoint: {
         auto o = value.toObject();
         return QPoint(o.value(QStringLiteral("x")).toInt(), o.value(QStringLiteral("y")).toInt());
